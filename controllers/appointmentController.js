@@ -80,7 +80,6 @@ exports.sendAppointmentReminder = async (req, res) => {
     const doctor = await User.findById(doctorId);
     const appointment = await Appointment.findById(appointmentId);
 
-
     const userEmail = user.email;
 
     const emailOptions = {

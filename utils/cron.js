@@ -1,35 +1,36 @@
 const cron = require('node-cron');
 const Appointment = require('../models/appointmentModel.js');
-const axios = require('axios');
-const cron = require('node-cron');
+const sendAppointmentReminder = require('../controllers/appointmentController.js').sendAppointmentReminder;
+const User = require('../models/userModel.js');
+const moment = require('moment');
 
-// Get the CRON token
-async function getCronToken() {
+
+cron.schedule('0 9 * * *', async () => {//run at 9 Am everyday
   try {
-    const response = await axios.get('http://your-app-url/generate-cron-token');
-    return response.data.token;
-  } catch (error) {
-    console.error('Error getting cron token:', error.message);
-    return null;
-  }
-}
+    const now = moment();
 
-// Schedule the CRON job
-cron.schedule('0 9 * * *', async () => {
-  try {
-    const cronToken = await getCronToken();
+    // Retrieve upcoming appointments 
+    const upcomingAppointments = await Appointment.find({
+      date: { $gt: now, $lt: now.clone().add(1, 'days') } //within the next 24 hours
+    });
 
-    if (cronToken) {
-      // Include the cronToken in the headers of your requests to the protected routes
-      const response = await axios.post(
-        'http://your-app-url/send-appointment-reminders',
-        {},
-        { headers: { Authorization: `Bearer ${cronToken}` } }
-      );
+    // Loop through upcoming appointments and send reminders
+    for (const appointment of upcomingAppointments) {
+      const user = await User.findById(appointment.user);
 
-      console.log('Appointment reminder emails sent');
+      if (user.role === 'user') {
+        // This is a patient, send the reminder to the patient
+        await sendAppointmentReminder(user._id, appointment._id);
+        // } else if (user.role === 'doctor') {
+        //   // This is a doctor, send the reminder to the doctor
+        //   // Assuming you have a doctor's email field in your User model
+        //   await sendAppointmentReminder(user._id, appointment._id);
+        // }
+      }
     }
+
+    console.log('Appointment reminder emails sent');
   } catch (error) {
-    console.error('Error sending appointment reminder emails:', error.message);
+    console.error('Error sending appointment reminder emails:', error);
   }
 });
