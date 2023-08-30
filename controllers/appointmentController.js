@@ -31,6 +31,28 @@ exports.bookAppointment = async (req, res) => {
       return res.status(409).json({ message: "Appointment slot already booked" });
     }
 
+    // Check doctor's office hours for availability
+    const dayOfWeek = moment(appointmentDate).format('ddd').toLowerCase();
+    const selectedTime = moment(appointmentDate).format('HH:mm');
+
+    let isAvailable = false;
+
+    doctor.officeHours.map((officeHour) => {
+      if (
+        officeHour.day === dayOfWeek &&
+        moment(selectedTime, 'HH:mm').isBetween(
+          moment(officeHour.startTime, 'HH:mm'),
+          moment(officeHour.endTime, 'HH:mm'),
+        )
+      ) {
+        isAvailable = true;
+        return true; // Break the map loop
+      }
+    });
+
+    if (!isAvailable) {
+      return res.status(400).json({ message: `Dr. ${doctor.fullname} is not available at the selected time. Please check doctor office hour at Dr. ${doctor.fullname}'s Profile` });
+    }
 
     const appointment = await Appointment.create({
       doctor: doctorId,

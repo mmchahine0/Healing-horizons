@@ -7,8 +7,9 @@ const roomReservationSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
-    roomType: {
-      type: String,
+    room: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Room',
       required: true,
     },
     checkInDate: {
@@ -21,9 +22,10 @@ const roomReservationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['reserved', 'checked-in', 'checked-out', 'canceled'],
-      default: 'reserved',
+      enum: ['pending', 'reserved', 'checked-in', 'checked-out', 'canceled'],
+      default: 'pending',
     },
+
   },
   { timestamps: true }
 );

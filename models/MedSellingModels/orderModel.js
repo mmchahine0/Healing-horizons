@@ -14,6 +14,10 @@ const orderSchema = new mongoose.Schema(
         ref: "Product",
       },
     ],
+    roomReservation: {
+      type: Schema.Types.ObjectId,
+      ref: "RoomReservation",
+    },
     orderStatus: {
       type: String,
       default: "pending",

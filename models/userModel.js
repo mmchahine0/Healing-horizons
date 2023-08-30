@@ -31,7 +31,28 @@ const userSchema = new mongoose.Schema(
       default: 'user',
       enum: ["user", "doctor"],
     },
+    officeHours: [
+      {
+        day: {
+          type: String,
+          enum: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+        },
+        startTime: {
+          type: String,
+        },
+        endTime: {
+          type: String,
+        },
+      },
+    ],
+    specialty: {
+      type: String,
+      enum: ["Cardiology", "Dermatology", "Endocrinology", "Gastroenterology", "Neurology", "Oncology", "Orthopedics", "Pediatrics", "Psychiatry", "Urology", "Other"]
+    },
     image: {
+      type: String,
+    },
+    bio: {
       type: String,
     },
     dateofbirth: {

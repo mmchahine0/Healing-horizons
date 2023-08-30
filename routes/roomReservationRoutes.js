@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const roomReservationController = require('../controllers/roomReservationController.js');
-const authController = require('../controllers/authController.js');
+const authController = require('../controllers/authController');
+const roomReservationController = require('../controllers/roomReservationController');
 
-router.post('/reserve', authController.protect, roomReservationController.reserveRoom);
-router.get('/reservations', authController.protect, roomReservationController.getRoomReservations);
+router.post('/reserve-room', authController.protect, roomReservationController.reserveRoom);
+router.get('/room-reservations', authController.protect, roomReservationController.getRoomReservations);
 
 module.exports = router;

@@ -28,3 +28,24 @@ exports.createMedicalRecord = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong during the medical record creation process, Please try again later." });
   }
 };
+exports.getSpecificUser = async (req, res) => {
+  try {
+    // Check if the requesting user is authorized (doctor)
+    if (req.user.role !== 'doctor') {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const userId = req.params.userId;
+    // Find the user with the specified ID and role "user"
+    const user = await User.findOne({ _id: userId, role: 'user' });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json(user);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: 'Something went wrong' });
+  }
+};

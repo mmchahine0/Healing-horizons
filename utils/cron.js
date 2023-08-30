@@ -34,3 +34,16 @@ cron.schedule('0 9 * * *', async () => {//run at 9 Am everyday
     console.error('Error sending appointment reminder emails:', error);
   }
 });
+
+cron.schedule('0 9 * * *', async () => {
+  try {
+    const now = moment();
+
+    // Find and delete appointments that have passed their date
+    await Appointment.deleteMany({ date: { $lt: now } });
+
+    console.log('Deleted past appointments');
+  } catch (error) {
+    console.error('Error deleting past appointments:', error);
+  }
+});

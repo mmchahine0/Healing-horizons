@@ -6,5 +6,6 @@ const authController = require('../controllers/authController');
 router.use(authController.protect);
 
 router.post('/create', medicalRecordController.createMedicalRecord);
+router.get('/getAUser', medicalRecordController.getSpecificUser);
 
 module.exports = router;
