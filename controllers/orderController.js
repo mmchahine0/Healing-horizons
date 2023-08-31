@@ -2,34 +2,7 @@ const Cart = require("../models/MedSellingModels/cartModel");
 const User = require("../models/userModel");
 const Order = require("../models/MedSellingModels/orderModel");
 const RoomReservation = require("../models/roomReservationModel"); // Import your room reservation model
-const rooms = require("../models/roomModel");
 
-const decreaseAvailableRooms = async (checkInDate, checkOutDate) => {
-  try {
-    const reservedRooms = await RoomReservation.find({
-      checkInDate: { $lt: checkOutDate },
-      checkOutDate: { $gt: checkInDate },
-      status: { $in: ['pending', 'reserved', 'checked-in'] },
-    });
-
-    const totalRooms = await rooms.find({ totalQuantity })
-
-    const availableRooms = totalRooms - reservedRooms.length;
-    if (availableRooms > 0) {
-      // Update the available room count in your room data
-      await rooms.findOneAndUpdate(
-        { availableRooms: availableRooms },
-        { new: true }
-      );
-    } else {
-      // Handle the case when there are no available rooms
-      throw new Error('No available rooms for the specified dates');
-    }
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
 
 exports.createNewOrder = async (req, res) => {
   try {
@@ -56,11 +29,6 @@ exports.createNewOrder = async (req, res) => {
         { _id: cart.roomReservation, status: 'pending' },
         { $set: { status: 'reserved' } }
       );
-      // Decrease the available room count for the reserved room type
-      const roomReservation = await RoomReservation.findById(cart.roomReservation);
-      if (roomReservation) {
-        await decreaseAvailableRooms(roomReservation.checkInDate, roomReservation.checkOutDate);
-      }
     }
 
 

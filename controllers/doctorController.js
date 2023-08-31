@@ -7,7 +7,7 @@ exports.updateOfficeHours = async (req, res) => {
     // Find the doctor
     const doctor = await User.findById(doctorId);
     //only doctors can change their office hours
-    if (!(doctor.role = "doctor")) return res.status(400).json({ message: "You can't access this feature" })
+    if (doctor.role == "user") return res.status(400).json({ message: "You can't access this feature" });
 
     if (!doctor) {
       return res.status(404).json({ message: 'Doctor not found' });
@@ -18,7 +18,7 @@ exports.updateOfficeHours = async (req, res) => {
 
     await doctor.save();
 
-    return res.status(200).json({ message: 'Office hours updated successfully', data: User });
+    return res.status(200).json({ message: 'Office hours updated successfully', data: doctor });
   } catch (error) {
     console.error('Error updating office hours:', error);
     return res.status(500).json({ message: 'Error updating office hours' });
@@ -29,7 +29,7 @@ exports.fillBio = async (req, res) => {
     const doctorId = req.user._id;
 
     const doctor = await User.findById(doctorId);
-    if (!(doctor.role = "doctor")) return res.status(400).json({ message: "You can't access this feature" })
+    if (doctor.role !== "doctor") return res.status(400).json({ message: "You can't access this feature" });
     if (!doctor) {
       return res.status(404).json({ message: 'Doctor not found' });
     }

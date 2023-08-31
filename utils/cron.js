@@ -3,8 +3,8 @@ const Appointment = require('../models/appointmentModel.js');
 const sendAppointmentReminder = require('../controllers/appointmentController.js').sendAppointmentReminder;
 const User = require('../models/userModel.js');
 const moment = require('moment');
-
-
+const RoomReservation = require('../models/roomReservationModel.js');
+const rooms = require('../models/roomModel.js');
 cron.schedule('0 9 * * *', async () => {//run at 9 Am everyday
   try {
     const now = moment();
@@ -47,3 +47,45 @@ cron.schedule('0 9 * * *', async () => {
     console.error('Error deleting past appointments:', error);
   }
 });
+
+const updateCheckedOutRooms = async () => {
+  try {
+    const currentDate = new Date();
+    const checkedOutReservations = await RoomReservation.find({
+      checkOutDate: { $lte: currentDate },
+      status: 'reserved'
+    });
+
+    for (const reservation of checkedOutReservations) {
+      reservation.status = 'checked-out';
+      await reservation.save();
+
+      // Increase available rooms for the specific room type
+      await increaseAvailableRooms(reservation.roomType, 1); // Assuming you have the roomType in the reservation
+
+      console.log(`Room for ${reservation.roomType} is now available.`);
+    }
+
+    console.log('Checked-out rooms updated successfully.');
+  } catch (error) {
+    console.error('Error updating checked-out rooms:', error);
+  }
+};
+
+const increaseAvailableRooms = async (roomType, quantity) => {
+  try {
+    const room = await rooms.findOne({ roomType });
+
+    if (room) {
+      room.availableQuantity += quantity;
+      await room.save();
+    } else {
+      throw new Error(`Room with type ${roomType} not found.`);
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+cron.schedule('0 9 * * *', updateCheckedOutRooms);

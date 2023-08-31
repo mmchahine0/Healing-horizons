@@ -1,5 +1,5 @@
 const User = require('../models/userModel.js');
-const Survey = require('../models/surveyModel');
+const Survey = require('../models/surveyModel.js');
 
 
 exports.submitSurvey = async (req, res) => {

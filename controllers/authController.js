@@ -51,6 +51,41 @@ exports.signup = async (req, res) => {
   }
 }
 
+exports.checkAdmin = async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    if (user && user.role === "admin") {
+      next();
+    } else {
+      return res.status(403).json({ message: "You do not have permission to access this resource" });
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Error while checking admin status" });
+  }
+};
+
+exports.makeDoctor = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.role = "doctor";
+
+    await user.save();
+
+    return res.status(200).json({ message: "User's role updated to doctor" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Error updating user's role" });
+  }
+};
+
+
 exports.login = async (req, res) => {
   try {
     const checkUser = await User.findOne({ email: req.body.email });

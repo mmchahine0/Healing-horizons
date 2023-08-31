@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
+
 const userSchema = new mongoose.Schema(
   {
     fullname: {
@@ -23,13 +24,12 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       minlenght: 4,
-      maxlength: 18,
       required: [true, "Please enter your Password"]
     },
     role: {
       type: String,
       default: 'user',
-      enum: ["user", "doctor"],
+      enum: ["user", "doctor", "admin"],
     },
     officeHours: [
       {
@@ -90,16 +90,15 @@ userSchema.pre("save", async function (next) {
 });
 
 
-userSchema.pre("save", async function (next) {
-  try {
-    if (!this.isModified("password") || this.isNew) {
-      next();
-    }
-    this.passwordChangedAt = Date.now() - 1000;
-  } catch (err) {
-    console.log(err);
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) {
+    return next();
   }
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
 });
+
 
 
 userSchema.methods.passwordChangedAfterTokenIssued = function (JWTexpirydate) {

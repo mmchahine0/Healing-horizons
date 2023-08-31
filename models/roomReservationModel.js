@@ -1,4 +1,6 @@
+const { Schemas } = require('aws-sdk');
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const roomReservationSchema = new mongoose.Schema(
   {
@@ -19,6 +21,11 @@ const roomReservationSchema = new mongoose.Schema(
     checkOutDate: {
       type: Date,
       required: true,
+    },
+    Price: {
+      type: Schema.Types.Decimal128,
+      default: 0.0,
+      required: [true, "Add the product price"],
     },
     status: {
       type: String,

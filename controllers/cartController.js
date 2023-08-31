@@ -4,7 +4,19 @@ const Product = require("../models/MedSellingModels/productModel.js");
 const RoomReservation = require("../models/roomReservationModel");
 const rooms = require("../models/roomModel");
 
-const getAvailableRooms = async (checkInDate, checkOutDate) => {
+const calculateRoomReservationPrice = (checkInDate, checkOutDate) => {
+  const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in a day
+
+  // Calculate the number of days between check-in and check-out dates
+  const numberOfDays = Math.round(Math.abs((checkOutDate - checkInDate) / oneDay));
+
+  const basePricePerDay = 50; // $50 per day
+  const totalPrice = basePricePerDay * numberOfDays;
+
+  return totalPrice;
+};
+
+const decreaseAvailableRooms = async (checkInDate, checkOutDate) => {
   try {
     const reservedRooms = await RoomReservation.find({
       checkInDate: { $lt: checkOutDate },
@@ -12,9 +24,48 @@ const getAvailableRooms = async (checkInDate, checkOutDate) => {
       status: { $in: ['pending', 'reserved', 'checked-in'] },
     });
 
-    const totalRooms = await rooms.find({ totalQuantity })
+    const totalReservedRooms = reservedRooms.length;
 
-    const availableRooms = totalRooms - reservedRooms.length;
+    // Fetch the room record
+    const room = await rooms.findOne({ roomType: 'normal' }); // Adjust the roomType as needed
+
+    if (room) {
+      if (room.availableQuantity >= totalReservedRooms) {
+        room.availableQuantity -= totalReservedRooms;
+        await room.save();
+      } else {
+        // Handle the case where there are not enough available rooms
+        throw new Error('Not enough available rooms for the specified dates');
+      }
+    } else {
+      throw new Error('Room not found');
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+const getAvailableRooms = async (checkInDate, checkOutDate) => {
+  try {
+    // Find all room reservations that overlap with the given dates
+    const reservedRooms = await RoomReservation.find({
+      checkInDate: { $lt: checkOutDate },
+      checkOutDate: { $gt: checkInDate },
+      status: { $in: ['pending', 'reserved', 'checked-in'] },
+    });
+
+    // Fetch the total quantity of rooms for the selected room type
+    const roomType = 'normal';
+    const roomTypeRecord = await rooms.findOne({ roomType });
+    const totalRooms = roomTypeRecord.totalQuantity;
+
+    // Calculate the number of reserved rooms
+    const totalReservedRooms = reservedRooms.length;
+
+    // Calculate available rooms
+    const availableRooms = totalRooms - totalReservedRooms;
+
     return availableRooms;
   } catch (error) {
     console.error(error);
@@ -30,7 +81,13 @@ exports.addToCart = async (req, res) => {
     }
 
     const cart = await Cart.findOne({ cartOwner: cartOwner._id });
+    if (!cart) {
+      const newCart = await Cart.create({
+        cartOwner: cartOwner._id
+      });
+      await cartOwner.save();
 
+    }
     if (req.body.product) {
       // Handling medicine purchase
       const product = await Product.findOne({ _id: req.body.product });
@@ -48,38 +105,43 @@ exports.addToCart = async (req, res) => {
       product.productQuantity = product.productQuantity - productQuantity;
       await product.save();
 
-      if (!cart) {
-        const newCart = await Cart.create({
-          cartOwner: cartOwner._id,
-          products: [req.body.product],
-          totalPrice: price,
-        });
-        return res.status(200).json(newCart);
-      }
-      cart.products.push(req.body.product);
-      cart.totalPrice = cart.totalPrice + price;
-      await cart.save();
+      newCart.products.push([req.body.product]);
+      newCart.totalPrice = newCart.totalPrice + price;
+      await newCart.save();
+      return res.status(200).json({ newCart });
 
-      return res.status(200).json({ cart });
-    } else if (req.body.roomType && req.body.checkInDate && req.body.checkOutDate) {
+    } if (req.body.roomType && req.body.checkInDate && req.body.checkOutDate) {
 
       // Handling room reservation
       const availableRooms = await getAvailableRooms(req.body.checkInDate, req.body.checkOutDate);
       if (availableRooms <= 0) {
         return res.status(409).json({ message: "Sorry, no rooms are available for the selected dates" });
       }
+
+      // Calculate the total price for the room reservation based on the room type and duration
+      // You need to implement this calculation logic based on your business rules
+      let roomReservationPrice = calculateRoomReservationPrice(req.body.checkInDate, req.body.checkOutDate);
+
       const newReservation = new RoomReservation({
         user: req.user._id,
         room: req.body.room,
         checkInDate: req.body.checkInDate,
         checkOutDate: req.body.checkOutDate,
+        Price: roomReservationPrice,
         status: 'pending',
       });
 
+      // Update the cart's total price
+      cart.totalPrice += roomReservationPrice;
+
       cart.roomReservation.push(newReservation._id);
+      // Decrease the available room count for the reserved room type
+      const roomReservation = await RoomReservation.findById(cart.roomReservation);
+      if (roomReservation) {
+        await decreaseAvailableRooms(roomReservation.checkInDate, roomReservation.checkOutDate);
+      }
       await cart.save();
 
-      //send a frontend message to tell the user to pay in cart to continue the reservation
 
       return res.status(200).json({ message: 'Room reservation added to cart. Please complete your payment to confirm the reservation.' });
 

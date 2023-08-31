@@ -11,10 +11,10 @@ exports.bookAppointment = async (req, res) => {
 
     const doctor = await User.findById(doctorId);
     const patient = await User.findById(patientId);
-    //Making sure that the user is not making an appointment with another user or a doctor not making an appointment with the other
-    if ((doctor.role == "user" && patient.role == "user") || (doctor.role == "doctor" && patient.role == "doctor")) {
-      return res.status(400).json({ message: "You can't do an appointment with this user/doctor" });
-    }
+    // //Making sure that the user is not making an appointment with another user or a doctor not making an appointment with the other
+    // if ((doctor.role == "user" && patient.role == "user") || (doctor.role == "doctor" && patient.role == "doctor")) {
+    //   return res.status(400).json({ message: "You can't do an appointment with this user / doctor" });
+    // }
     if (!doctor || !patient) {
       return res.status(404).json({ message: "Doctor or patient not found" });
     }
@@ -37,28 +37,33 @@ exports.bookAppointment = async (req, res) => {
 
     let isAvailable = false;
 
-    doctor.officeHours.map((officeHour) => {
+    for (const officeHour of doctor.officeHours) {
       if (
         officeHour.day === dayOfWeek &&
         moment(selectedTime, 'HH:mm').isBetween(
           moment(officeHour.startTime, 'HH:mm'),
           moment(officeHour.endTime, 'HH:mm'),
+          null,  // Add 'null' as the fourth argument to make the comparison inclusive
+          '[]'
         )
       ) {
         isAvailable = true;
-        return true; // Break the map loop
+        break; // Exit the loop
       }
-    });
+    }
 
     if (!isAvailable) {
       return res.status(400).json({ message: `Dr. ${doctor.fullname} is not available at the selected time. Please check doctor office hour at Dr. ${doctor.fullname}'s Profile` });
     }
 
-    const appointment = await Appointment.create({
-      doctor: doctorId,
-      patient: patientId,
-      appointmentDate,
-    });
+
+    const appointmentData = {
+      time: selectedTime,
+      date: moment(appointmentDate).format('YYYY-MM-DD'),
+      user: patientId,
+    };
+
+    const appointment = await Appointment.create(appointmentData);
 
     return res.status(201).json({ message: "Appointment booked successfully", data: appointment });
   } catch (err) {
@@ -69,9 +74,8 @@ exports.bookAppointment = async (req, res) => {
 
 exports.cancelAppointment = async (req, res) => {
   try {
-    const appointmentId = req.params.appointmentId;
+    const appointmentId = req.body.appointmentId;
     const patientId = req.user._id;
-
 
     const appointment = await Appointment.findById(appointmentId);
 
@@ -79,13 +83,14 @@ exports.cancelAppointment = async (req, res) => {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
+
     // Check if the patient is authorized to cancel the appointment
-    if (appointment.patient._id !== patientId) {
+    if (!appointment.user._id.equals(patientId)) {
       return res.status(403).json({ message: "Unauthorized to cancel this appointment" });
     }
 
-
-    await appointment.remove();
+    // Remove the appointment
+    await appointment.deleteOne();
 
     return res.status(200).json({ message: "Appointment cancelled successfully" });
   } catch (err) {
@@ -118,3 +123,7 @@ exports.sendAppointmentReminder = async (req, res) => {
     res.status(500).json({ message: 'Error sending appointment reminder email' });
   }
 };
+// {
+//   "doctorId": "64f07961f3d7cb86a12f252b",
+//     "appointmentDate": "2023-09-05T11:00"
+// }
