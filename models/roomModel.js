@@ -2,23 +2,27 @@ const mongoose = require('mongoose');
 
 const roomSchema = new mongoose.Schema(
   {
-    roomType: {
+    roomNumber: {
       type: String,
       required: true,
-      //enum: ['normal', 'vip'],//to be added
-      default: 'normal',
+      unique: true,
     },
-    totalQuantity: {
-      type: Number,
+    // roomType: {
+    //   type: String,
+    //   required: true,
+    // },
+    status: {
+      type: String,
+      enum: ['available', 'booked', 'occupied'],
+      default: 'available',
+    },
+    floorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Floor',
       required: true,
-      default: 24,
-    },
-    availableQuantity: {
-      type: Number,
-      required: true,
-      default: 24,
-    },
+    }
   },
   { timestamps: true }
 );
+
 module.exports = mongoose.model('Room', roomSchema);

@@ -2,7 +2,7 @@ const Cart = require("../models/MedSellingModels/cartModel.js");
 const User = require("../models/userModel.js");
 const Product = require("../models/MedSellingModels/productModel.js");
 const RoomReservation = require("../models/roomReservationModel");
-const rooms = require("../models/roomModel");
+const floor = require("../models/floorModel");
 
 const calculateRoomReservationPrice = (checkInDate, checkOutDate) => {
   const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in a day
@@ -16,49 +16,48 @@ const calculateRoomReservationPrice = (checkInDate, checkOutDate) => {
   return totalPrice;
 };
 
-const decreaseAvailableRooms = async (checkInDate, checkOutDate) => {
-  try {
-    const reservedRooms = await RoomReservation.find({
-      checkInDate: { $lt: checkOutDate },
-      checkOutDate: { $gt: checkInDate },
-      status: { $in: ['pending', 'reserved', 'checked-in'] },
-    });
+// const decreaseAvailableRooms = async (checkInDate, checkOutDate) => {
+//   try {
+//     const reservedRooms = await RoomReservation.find({
+//       checkInDate: { $lt: checkOutDate },
+//       checkOutDate: { $gt: checkInDate },
+//       status: { $in: ['pending', 'reserved', 'checked-in'] },
+//     });
 
-    const totalReservedRooms = reservedRooms.length;
+//     const totalReservedRooms = reservedRooms.length;
 
-    // Fetch the room record
-    const room = await rooms.findOne({ roomType: 'normal' }); // Adjust the roomType as needed
+//     // Fetch the room record
+//     const floor = await floor.findOne({ roomType: 'normal' }); // Adjust the roomType as needed
 
-    if (room) {
-      if (room.availableQuantity >= totalReservedRooms) {
-        room.availableQuantity -= totalReservedRooms;
-        await room.save();
-      } else {
-        // Handle the case where there are not enough available rooms
-        throw new Error('Not enough available rooms for the specified dates');
-      }
-    } else {
-      throw new Error('Room not found');
-    }
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
+//     if (floor) {
+//       if (floor.availableQuantity >= totalReservedRooms) {
+//         floor.availableQuantity -= totalReservedRooms;
+//         await floor.save();
+//       } else {
+//         // Handle the case where there are not enough available rooms
+//         throw new Error('Not enough available rooms for the specified dates');
+//       }
+//     } else {
+//       throw new Error('Room not found');
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     throw error;
+//   }
+// };
 
 const getAvailableRooms = async (checkInDate, checkOutDate) => {
   try {
-    // Find all room reservations that overlap with the given dates
     const reservedRooms = await RoomReservation.find({
       checkInDate: { $lt: checkOutDate },
       checkOutDate: { $gt: checkInDate },
       status: { $in: ['pending', 'reserved', 'checked-in'] },
     });
 
-    // Fetch the total quantity of rooms for the selected room type
-    const roomType = 'normal';
-    const roomTypeRecord = await rooms.findOne({ roomType });
-    const totalRooms = roomTypeRecord.totalQuantity;
+    const allFloors = await floor.find({});
+
+    // Calculate the total quantity of rooms across all floors
+    const totalRooms = allFloors.reduce((total, floor) => total + floor.totalQuantity, 0);
 
     // Calculate the number of reserved rooms
     const totalReservedRooms = reservedRooms.length;
@@ -83,7 +82,8 @@ exports.addToCart = async (req, res) => {
     const cart = await Cart.findOne({ cartOwner: cartOwner._id });
     if (!cart) {
       const newCart = await Cart.create({
-        cartOwner: cartOwner._id
+        cartOwner: cartOwner._id,
+        totalPrice: 0,
       });
       await cartOwner.save();
 
@@ -110,7 +110,8 @@ exports.addToCart = async (req, res) => {
       await newCart.save();
       return res.status(200).json({ newCart });
 
-    } if (req.body.roomType && req.body.checkInDate && req.body.checkOutDate) {
+    } if (//req.body.roomType &&
+      req.body.checkInDate && req.body.checkOutDate) {
 
       // Handling room reservation
       const availableRooms = await getAvailableRooms(req.body.checkInDate, req.body.checkOutDate);
@@ -124,7 +125,7 @@ exports.addToCart = async (req, res) => {
 
       const newReservation = new RoomReservation({
         user: req.user._id,
-        room: req.body.room,
+        roomId: req.body.room,
         checkInDate: req.body.checkInDate,
         checkOutDate: req.body.checkOutDate,
         Price: roomReservationPrice,

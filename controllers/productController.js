@@ -8,12 +8,17 @@ const checkDoctor = async (req) => {
       console.log("User not found")
       return false;
     }
-    if (checkUser.role !== "doctor") {
+
+    console.log("User role:", checkUser.role);
+
+    if (checkUser.role !== "doctor" && checkUser.role !== "admin") {
+      console.log("User not authorized to perform the action");
       return false;
     }
-    else { return true; }
+    return true;
   } catch (err) {
     console.log(err)
+    throw err
   }
 };
 

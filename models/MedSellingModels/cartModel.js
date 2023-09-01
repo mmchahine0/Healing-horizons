@@ -14,10 +14,10 @@ const cartSchema = new mongoose.Schema(
         ref: "Product",
       }
     ],
-    roomReservation: {
+    roomReservation: [{
       type: Schema.Types.ObjectId,
       ref: "RoomReservation",
-    },
+    }],
     totalPrice: {
       type: Schema.Types.Decimal128,
       default: 0.0,

@@ -18,6 +18,8 @@ const medicalReservationRoutes = require('./routes/medicalReservationRoutes.js')
 const roomReservationRoutes = require('./routes/roomReservationRoutes.js');
 const surveyRoutes = require('./routes/surveyRoutes.js')
 const doctorRoutes = require('./routes/doctorRoutes.js')
+const roomRoutes = require('./routes/roomRoutes');
+const floorRoutes = require('./routes/floorRoutes');
 
 app.use(express.json());
 app.use(cors());
@@ -44,7 +46,8 @@ app.use("/medical-reservation", medicalReservationRoutes);
 app.use("/room-reservation", roomReservationRoutes)
 app.use("/survey", surveyRoutes)
 app.use("/doctor", doctorRoutes)
-
+app.use("/room", roomRoutes)
+app.use("/floor", floorRoutes)
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

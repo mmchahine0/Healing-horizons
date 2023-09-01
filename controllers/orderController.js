@@ -1,8 +1,7 @@
 const Cart = require("../models/MedSellingModels/cartModel");
 const User = require("../models/userModel");
 const Order = require("../models/MedSellingModels/orderModel");
-const RoomReservation = require("../models/roomReservationModel"); // Import your room reservation model
-
+const RoomReservation = require("../models/roomReservationModel");
 
 exports.createNewOrder = async (req, res) => {
   try {
@@ -16,23 +15,28 @@ exports.createNewOrder = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Create a new order with the provided data
     const newOrder = new Order({
       orderOwner: cartOwner._id,
       items: cart.products,
-      status: "pending", // cancel, delivered todo
+      status: "pending",
     });
 
     if (cart.roomReservation) {
-      // If cart has a room reservation, add it to the order
-      newOrder.roomReservation = cart.roomReservation;
-      await RoomReservation.updateOne(
-        { _id: cart.roomReservation, status: 'pending' },
+      // If cart has room reservations, add their ObjectIds to the order
+      newOrder.roomReservation = cart.roomReservation.map(reservation => reservation._id);
+
+      // Update the status of the room reservations to 'reserved'
+      await RoomReservation.updateMany(
+        { _id: { $in: cart.roomReservation }, status: 'pending' },
         { $set: { status: 'reserved' } }
       );
     }
 
-
+    // Save the new order to the database
     await newOrder.save();
+
+    // Reset cart data
     cart.products = [];
     cart.roomReservation = null; // Reset room reservation in cart
     cart.totalPrice = 0.0;
@@ -47,10 +51,11 @@ exports.createNewOrder = async (req, res) => {
 
 exports.updateOrderStatus = async (req, res) => {
   try {
-    const admin = await User.findOne({ _id: req.user._id }); // Fixed missing curly braces
+    const admin = await User.findOne({ _id: req.user._id });
     const orderId = req.params.orderId;
 
     const order = await Order.findById(orderId);
+
     // Authorization: Only doctors can update order status
     if (admin.role !== "doctor") {
       return res.status(400).json({ message: "Order status can only be updated by a doctor" });
