@@ -1,7 +1,8 @@
 const RoomReservation = require('../models/roomReservationModel');
-const Cart = require('../models/MedSellingModels/cartModel'); // Import your Cart model
-const floor = require("../models/floorModel");
+const Cart = require('../models/MedSellingModels/cartModel');
+const Floor = require("../models/floorModel");
 const moment = require('moment');
+const room = require('../models/roomModel');
 
 const calculateRoomReservationPrice = (checkInDate, checkOutDate) => {
   // Parse the ISO 8601 date strings into JavaScript Date objects
@@ -28,7 +29,7 @@ const getAvailableRooms = async (checkInDate, checkOutDate) => {
       status: { $in: ['pending', 'reserved', 'checked-in'] },
     });
 
-    const allFloors = await floor.find({});
+    const allFloors = await Floor.find({});
 
     // Calculate the total quantity of rooms across all floors
     const totalRooms = allFloors.reduce((total, floor) => total + floor.totalQuantity, 0);
@@ -50,6 +51,10 @@ exports.reserveRoom = async (req, res) => {
   try {
     const { roomId, checkInDate, checkOutDate } = req.body;
 
+    const roomCheck = await room.findById(roomId);
+    if (!roomCheck) return res.status(404).json({ message: "room not found" })
+    if (roomCheck.status == "occupied") return res.status(404).json({ message: "room occupied" })
+
     // Format the check-in and check-out dates to include a time component in HH:mm format
     const formattedCheckInDate = moment(checkInDate).format('YYYY-MM-DDTHH:mm');
     const formattedCheckOutDate = moment(checkOutDate).format('YYYY-MM-DDTHH:mm');
@@ -67,6 +72,7 @@ exports.reserveRoom = async (req, res) => {
         totalPrice: 0,
       });
     }
+
     const availableRooms = await getAvailableRooms(checkInDate, checkOutDate);
     if (availableRooms <= 0) {
       return res.status(409).json({ message: "Sorry, no rooms are available for the selected dates" });
@@ -93,13 +99,22 @@ exports.reserveRoom = async (req, res) => {
       status: 'pending',
     });
     cart.totalPrice += roomReservationPrice;
-    await newReservation.save();
+    roomCheck.status = "occupied";
 
+    await newReservation.save();
+    await roomCheck.save();
     // Add the room reservation to the cart
     cart.roomReservation.push(newReservation._id);
     await cart.save();
-    //send a frontend messag to tell the user to pay in cart to countinue the reservation
 
+    // Decrease the available room count in the Floor schema
+    const floor = await Floor.findOne({ rooms: roomId }); // Find the floor that has the room
+    if (floor) {
+      floor.availableQuantity -= 1; // Decrease available room count by 1
+      await floor.save();
+    }
+
+    // Send a frontend message to tell the user to pay in cart to continue the reservation
     res.status(200).json({ message: 'Room reservation added to cart. Please complete your payment to confirm the reservation.' });
 
   } catch (error) {
@@ -107,7 +122,6 @@ exports.reserveRoom = async (req, res) => {
     res.status(500).json({ message: 'Something went wrong' });
   }
 };
-
 
 exports.getRoomReservations = async (req, res) => {
   try {

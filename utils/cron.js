@@ -5,6 +5,7 @@ const User = require('../models/userModel.js');
 const moment = require('moment');
 const RoomReservation = require('../models/roomReservationModel.js');
 const rooms = require('../models/roomModel.js');
+const Floor = require('../models/floorModel.js');
 cron.schedule('0 9 * * *', async () => {//run at 9 Am everyday
   try {
     const now = moment();
@@ -48,11 +49,12 @@ cron.schedule('0 9 * * *', async () => {
   }
 });
 
+
 const updateCheckedOutRooms = async () => {
   try {
-    const currentDate = new Date();
+    const currentDate = moment(); // Use moment for the current date and time
     const checkedOutReservations = await RoomReservation.find({
-      checkOutDate: { $lte: currentDate },
+      checkOutDate: { $lte: currentDate.toDate() }, // Convert moment to JavaScript Date
       status: 'reserved'
     });
 
@@ -60,8 +62,8 @@ const updateCheckedOutRooms = async () => {
       reservation.status = 'checked-out';
       await reservation.save();
 
-      // Increase available rooms for the specific room type
-      await increaseAvailableRooms(reservation.roomType, 1); // Assuming you have the roomType in the reservation
+      // Call the function to increase available rooms
+      await increaseAvailableRooms(reservation.roomId);
 
       console.log(`Room for ${reservation.roomType} is now available.`);
     }
@@ -72,20 +74,27 @@ const updateCheckedOutRooms = async () => {
   }
 };
 
-const increaseAvailableRooms = async (roomType, quantity) => {
+const increaseAvailableRooms = async (roomId) => {
   try {
-    const room = await rooms.findOne({ roomType });
+    // Find the floor that contains the room
+    const floor = await Floor.findOne({ rooms: roomId });
 
-    if (room) {
-      room.availableQuantity += quantity;
-      await room.save();
+    if (floor) {
+      // Decrease available rooms for the specific floor
+      floor.availableQuantity += 1; // Assuming 1 room is now available
+      await floor.save();
     } else {
-      throw new Error(`Room with type ${roomType} not found.`);
+      console.log(`Floor not found for room with ID ${roomId}.`);
     }
   } catch (error) {
-    console.error(error);
-    throw error;
+    console.error('Error increasing available rooms:', error);
   }
 };
 
 cron.schedule('0 9 * * *', updateCheckedOutRooms);
+
+module.exports = updateCheckedOutRooms;
+
+
+
+

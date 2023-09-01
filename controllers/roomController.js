@@ -33,7 +33,7 @@ exports.createRoom = async (req, res) => {
       return res.status(401).json({ message: "User cannot insert an item" })
     }
 
-    const { roomNumber, status, floorId } = req.body;
+    const { roomNumber, floorId } = req.body;
 
     const existingRoom = await room.findOne({ roomNumber });
 
@@ -43,7 +43,6 @@ exports.createRoom = async (req, res) => {
     const newRoom = new room({
       roomNumber,
       // roomType,
-      status,
       floorId
     });
 

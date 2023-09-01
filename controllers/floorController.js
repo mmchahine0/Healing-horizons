@@ -8,9 +8,6 @@ const checkDoctor = async (req) => {
       console.log("User not found")
       return false;
     }
-
-    console.log("User role:", checkUser.role);
-
     if (checkUser.role !== "doctor" && checkUser.role !== "admin") {
       console.log("User not authorized to perform the action");
       return false;
@@ -31,7 +28,7 @@ exports.createFloor = async (req, res) => {
       return res.status(401).json({ message: "User cannot insert an item" })
     }
 
-    const { floorNumber, totalQuantity } = req.body;
+    const { floorNumber } = req.body;
 
     // Check if a floor with the same number already exists
     const existingFloor = await floor.findOne({ floorNumber });
@@ -41,8 +38,7 @@ exports.createFloor = async (req, res) => {
     }
 
     const newFloor = new floor({
-      floorNumber,
-      totalQuantity
+      floorNumber
     });
 
     await newFloor.save();
