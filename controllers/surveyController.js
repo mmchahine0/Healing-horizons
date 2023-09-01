@@ -6,18 +6,22 @@ exports.submitSurvey = async (req, res) => {
   try {
     const { allergies, medicalHistory, criticalConditions } = req.body;
 
-    const existingSurvey = await Survey.findOne({ user: req.user._id });
+    const user = await User.findById(req.user._id);
+
+    const existingSurvey = await Survey.findOne(user);
     if (existingSurvey && existingSurvey.done) {
       return res.status(400).json({ message: 'Survey already submitted' });
     } const newSurvey = new Survey({
-      user: req.user._id,
+      user,
       allergies,
       medicalHistory,
       criticalConditions,
       done: true
     });
 
+    user.surveys.push(newSurvey);
     await newSurvey.save();
+    await user.save();
 
     res.status(200).json({ message: 'Survey submitted' });
   } catch (error) {

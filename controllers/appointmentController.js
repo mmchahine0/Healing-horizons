@@ -123,7 +123,3 @@ exports.sendAppointmentReminder = async (req, res) => {
     res.status(500).json({ message: 'Error sending appointment reminder email' });
   }
 };
-// {
-//   "doctorId": "64f07961f3d7cb86a12f252b",
-//     "appointmentDate": "2023-09-05T11:00"
-// }

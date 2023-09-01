@@ -21,7 +21,10 @@ exports.createMedicalRecord = async (req, res) => {
       prescriptions,
       additionalNotes,
     });
+    patient.medicalRecords.push(medicalRecord);
 
+    medicalRecord.save();
+    patient.save();
     return res.status(201).json({ message: "Medical record created successfully", data: medicalRecord });
   } catch (err) {
     console.log(err);

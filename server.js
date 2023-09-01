@@ -12,7 +12,6 @@ const productRoutes = require('./routes/productRoutes.js');
 const utilRoutes = require('./routes/utilRoutes.js');
 const appointmentRoutes = require('./routes/appointmentRoutes.js');
 const communacationRoutes = require('./routes/communicationRoutes.js');
-// const notificationRoutes = require('./routes/notificationRoutes.js');
 const medicalRecordsRoutes = require('./routes/medicalRecordsRoutes.js');
 const medicalReservationRoutes = require('./routes/medicalReservationRoutes.js')
 const roomReservationRoutes = require('./routes/roomReservationRoutes.js');
@@ -40,7 +39,6 @@ app.use("/products", productRoutes);
 app.use("/util", utilRoutes);
 app.use("/appointment", appointmentRoutes);
 app.use("/communication", communacationRoutes);
-// app.use("/notification", notificationRoutes);
 app.use("/medical-records", medicalRecordsRoutes);
 app.use("/medical-reservation", medicalReservationRoutes);
 app.use("/room-reservation", roomReservationRoutes)

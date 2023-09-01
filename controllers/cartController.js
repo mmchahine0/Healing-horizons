@@ -16,36 +16,6 @@ const calculateRoomReservationPrice = (checkInDate, checkOutDate) => {
   return totalPrice;
 };
 
-// const decreaseAvailableRooms = async (checkInDate, checkOutDate) => {
-//   try {
-//     const reservedRooms = await RoomReservation.find({
-//       checkInDate: { $lt: checkOutDate },
-//       checkOutDate: { $gt: checkInDate },
-//       status: { $in: ['pending', 'reserved', 'checked-in'] },
-//     });
-
-//     const totalReservedRooms = reservedRooms.length;
-
-//     // Fetch the room record
-//     const floor = await floor.findOne({ roomType: 'normal' }); // Adjust the roomType as needed
-
-//     if (floor) {
-//       if (floor.availableQuantity >= totalReservedRooms) {
-//         floor.availableQuantity -= totalReservedRooms;
-//         await floor.save();
-//       } else {
-//         // Handle the case where there are not enough available rooms
-//         throw new Error('Not enough available rooms for the specified dates');
-//       }
-//     } else {
-//       throw new Error('Room not found');
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-// };
-
 const getAvailableRooms = async (checkInDate, checkOutDate) => {
   try {
     const reservedRooms = await RoomReservation.find({
