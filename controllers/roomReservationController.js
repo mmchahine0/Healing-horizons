@@ -49,11 +49,14 @@ const getAvailableRooms = async (checkInDate, checkOutDate) => {
 
 exports.reserveRoom = async (req, res) => {
   try {
+
     const { roomId, checkInDate, checkOutDate } = req.body;
 
     const roomCheck = await room.findById(roomId);
+
     if (!roomCheck) return res.status(404).json({ message: "room not found" })
-    if (roomCheck.status == "occupied") return res.status(404).json({ message: "room occupied" })
+
+    if (roomCheck.status == "occupied") return res.status(404).json({ message: "room occupied" })///////mongo transaction todo//////
 
     // Format the check-in and check-out dates to include a time component in HH:mm format
     const formattedCheckInDate = moment(checkInDate).format('YYYY-MM-DDTHH:mm');

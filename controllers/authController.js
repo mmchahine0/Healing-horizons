@@ -14,17 +14,7 @@ const createToken = (user, statusCode, message, res) => {
   res.status(statusCode).json({ message: message, status: "success", token });
 }
 
-// exports.generateCronToken = async (req, res) => {
-//   try {
-//     const cronToken = signToken('cron', { expiresIn: process.env.CRON_JWT_EXPIRES });
-//     res.status(200).json({ token: cronToken });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Error generating cron token' });
-//   }
-// };
 
-//finish this , implement api
 exports.signup = async (req, res) => {
   try {
     const userCheck = await User.findOne({ $or: [{ username: req.body.username }, { email: req.body.email }] });

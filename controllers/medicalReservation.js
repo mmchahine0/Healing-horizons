@@ -23,7 +23,7 @@ exports.requestMedication = async (req, res) => {
     });
 
     // Decrease the available quantity of the medication
-    /////////dooosame asss roommss//////
+
     requestedMedication.quantity -= quantity;
     await requestedMedication.save();
 

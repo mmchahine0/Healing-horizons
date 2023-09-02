@@ -6,6 +6,9 @@ const moment = require('moment');
 const RoomReservation = require('../models/roomReservationModel.js');
 const rooms = require('../models/roomModel.js');
 const Floor = require('../models/floorModel.js');
+
+
+
 cron.schedule('0 9 * * *', async () => {//run at 9 Am everyday
   try {
     const now = moment();
@@ -49,6 +52,7 @@ cron.schedule('0 9 * * *', async () => {
   }
 });
 
+/////////ttl index/////////
 
 const updateCheckedOutRooms = async () => {
   try {

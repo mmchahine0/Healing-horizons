@@ -11,10 +11,7 @@ exports.bookAppointment = async (req, res) => {
 
     const doctor = await User.findById(doctorId);
     const patient = await User.findById(patientId);
-    // //Making sure that the user is not making an appointment with another user or a doctor not making an appointment with the other
-    // if ((doctor.role == "user" && patient.role == "user") || (doctor.role == "doctor" && patient.role == "doctor")) {
-    //   return res.status(400).json({ message: "You can't do an appointment with this user / doctor" });
-    // }
+
     if (!doctor || !patient) {
       return res.status(404).json({ message: "Doctor or patient not found" });
     }

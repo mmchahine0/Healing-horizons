@@ -58,6 +58,7 @@ exports.addToCart = async (req, res) => {
       await cartOwner.save();
 
     }
+
     if (req.body.product) {
       // Handling medicine purchase
       const product = await Product.findOne({ _id: req.body.product });

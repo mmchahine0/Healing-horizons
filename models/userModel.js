@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 
+
+
 const userSchema = new mongoose.Schema(
   {
     fullname: {
@@ -31,6 +33,7 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "doctor", "admin"],
       default: "user",
     },
+
     officeHours: [
       {
         day: {
@@ -45,6 +48,7 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
+
     specialty: {
       type: String,
       enum: ["Cardiology", "Dermatology", "Endocrinology", "Gastroenterology", "Neurology", "Oncology", "Orthopedics", "Pediatrics", "Psychiatry", "Urology", "Other"]
