@@ -20,8 +20,23 @@ const appointmentSchema = new mongoose.Schema(
       enum: ['pending', 'confirmed', 'canceled'],
       default: 'pending',
     },
+    expireAt: {
+      type: Date,
+      default: undefined,
+    },
   },
   { timestamps: true }
 );
+
+appointmentSchema.pre('save', function (next) {
+  // Calculate the expiration time as the date plus one day
+  const expirationTime = new Date(this.date);
+  expirationTime.setDate(expirationTime.getDate() + 1);
+
+  this.expireAt = expirationTime;
+  next();
+});
+
+appointmentSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('Appointment', appointmentSchema);

@@ -43,19 +43,26 @@ const getAvailableRooms = async (checkInDate, checkOutDate) => {
 };
 
 exports.addToCart = async (req, res) => {
+
+  const session = await mongoose.startSession();
+
   try {
+    session.startTransaction();
+
     const cartOwner = await User.findOne({ _id: req.user._id });
     if (!cartOwner) {
       return res.status(404).json({ message: "A cart should have an owner" });
     }
 
-    const cart = await Cart.findOne({ cartOwner: cartOwner._id });
+    const cart = await Cart.findOne({ cartOwner: cartOwner._id }).session(session);;
     if (!cart) {
       const newCart = await Cart.create({
         cartOwner: cartOwner._id,
         totalPrice: 0,
-      });
-      await cartOwner.save();
+      },
+        { session: session }
+      );
+      await cartOwner.save({ session: session });
 
     }
 
@@ -74,11 +81,13 @@ exports.addToCart = async (req, res) => {
 
       let price = productPrice * productQuantity;
       product.productQuantity = product.productQuantity - productQuantity;
-      await product.save();
+
 
       newCart.products.push([req.body.product]);
       newCart.totalPrice = newCart.totalPrice + price;
-      await newCart.save();
+      await product.save({ session: session });
+      await newCart.save({ session: session });
+
       return res.status(200).json({ newCart });
 
     } if (//req.body.roomType &&
@@ -112,8 +121,10 @@ exports.addToCart = async (req, res) => {
       if (roomReservation) {
         await decreaseAvailableRooms(roomReservation.checkInDate, roomReservation.checkOutDate);
       }
-      await cart.save();
 
+      await newReservation.save({ session: session });
+      await cart.save({ session: session });
+      await session.commitTransaction(); // Commit the transaction
 
       return res.status(200).json({ message: 'Room reservation added to cart. Please complete your payment to confirm the reservation.' });
 
@@ -121,7 +132,10 @@ exports.addToCart = async (req, res) => {
       return res.status(400).json({ message: 'Invalid request' });
     }
   } catch (err) {
+    await session.abortTransaction();
     console.log(err);
     res.status(500).json({ message: err.message });
+  } finally {
+    session.endSession();
   }
 };

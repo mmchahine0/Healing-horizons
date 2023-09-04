@@ -3,62 +3,25 @@ const Cart = require('../models/MedSellingModels/cartModel');
 const Floor = require("../models/floorModel");
 const moment = require('moment');
 const room = require('../models/roomModel');
-
-const calculateRoomReservationPrice = (checkInDate, checkOutDate) => {
-  // Parse the ISO 8601 date strings into JavaScript Date objects
-  const checkInDateTime = new Date(checkInDate);
-  const checkOutDateTime = new Date(checkOutDate);
-
-  // Calculate the time difference in milliseconds between check-in and check-out
-  const timeDifference = checkOutDateTime - checkInDateTime;
-
-  // Calculate the number of days (rounded up)
-  const numberOfDays = Math.ceil(timeDifference / (24 * 60 * 60 * 1000)); // Milliseconds in a day
-
-  const basePricePerDay = 50.0; // $50 per day
-  const totalPrice = basePricePerDay * numberOfDays;
-
-  return totalPrice;
-};
-
-const getAvailableRooms = async (checkInDate, checkOutDate) => {
-  try {
-    const reservedRooms = await RoomReservation.find({
-      checkInDate: { $lt: checkOutDate },
-      checkOutDate: { $gt: checkInDate },
-      status: { $in: ['pending', 'reserved', 'checked-in'] },
-    });
-
-    const allFloors = await Floor.find({});
-
-    // Calculate the total quantity of rooms across all floors
-    const totalRooms = allFloors.reduce((total, floor) => total + floor.totalQuantity, 0);
-
-    // Calculate the number of reserved rooms
-    const totalReservedRooms = reservedRooms.length;
-
-    // Calculate available rooms
-    const availableRooms = totalRooms - totalReservedRooms;
-
-    return availableRooms;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
+const mongoose = require('mongoose');
 
 exports.reserveRoom = async (req, res) => {
+  const session = await mongoose.startSession();
+
   try {
+    session.startTransaction();
 
     const { roomId, checkInDate, checkOutDate } = req.body;
 
+    // Check if the requested room exists
     const roomCheck = await room.findById(roomId);
 
-    if (!roomCheck) return res.status(404).json({ message: "room not found" })
+    if (!roomCheck) return res.status(404).json({ message: "room not found" });
 
-    if (roomCheck.status == "occupied") return res.status(404).json({ message: "room occupied" })///////mongo transaction todo//////
+    // Check if the room is already occupied
+    if (roomCheck.status == "occupied") return res.status(404).json({ message: "room occupied" });
 
-    // Format the check-in and check-out dates to include a time component in HH:mm format
+    // Format the check-in and check-out dates
     const formattedCheckInDate = moment(checkInDate).format('YYYY-MM-DDTHH:mm');
     const formattedCheckOutDate = moment(checkOutDate).format('YYYY-MM-DDTHH:mm');
 
@@ -66,33 +29,39 @@ exports.reserveRoom = async (req, res) => {
     if (!moment(formattedCheckInDate, 'YYYY-MM-DDTHH:mm').isValid() || !moment(formattedCheckOutDate, 'YYYY-MM-DDTHH:mm').isValid()) {
       return res.status(400).json({ message: "Invalid reservation date format" });
     }
-    // Check if the user's cart has unpaid orders
+
     const cartOwner = req.user._id;
-    let cart = await Cart.findOne({ cartOwner });
+    // Find the user's cart and create one if it doesn't exist
+    let cart = await Cart.findOne({ cartOwner }).session(session);
+
     if (!cart) {
-      cart = await Cart.create({
-        cartOwner: cartOwner,
-        totalPrice: 0,
-      });
+      cart = await Cart.create(
+        [
+          {
+            cartOwner: cartOwner,
+            totalPrice: 0,
+          },
+        ],
+        { session: session }
+      )[0];
     }
 
-    const availableRooms = await getAvailableRooms(checkInDate, checkOutDate);
+    // Check if there are available rooms for the requested dates
+    const availableRooms = await getAvailableRooms(checkInDate, checkOutDate).session(session);
+
     if (availableRooms <= 0) {
       return res.status(409).json({ message: "Sorry, no rooms are available for the selected dates" });
     }
 
-    // Calculate the total price for the room reservation based on the room type and duration
-
+    // Calculate the room reservation price
     let roomReservationPrice = calculateRoomReservationPrice(checkInDate, checkOutDate);
 
     // Check if the calculated price is valid
-
     if (isNaN(roomReservationPrice) || roomReservationPrice < 0) {
       return res.status(400).json({ message: 'Invalid room reservation price' });
     }
 
     // Create a new room reservation
-
     const newReservation = new RoomReservation({
       user: cartOwner,
       roomId,
@@ -101,37 +70,35 @@ exports.reserveRoom = async (req, res) => {
       Price: roomReservationPrice,
       status: 'pending',
     });
+
+    // Update the cart's total price and mark the room as occupied
     cart.totalPrice += roomReservationPrice;
     roomCheck.status = "occupied";
 
-    await newReservation.save();
-    await roomCheck.save();
-    // Add the room reservation to the cart
+    // Save the new reservation, update the cart, and decrease available room count
+    await newReservation.save({ session: session });
+    await roomCheck.save({ session: session });
     cart.roomReservation.push(newReservation._id);
-    await cart.save();
+    await cart.save({ session: session });
 
-    // Decrease the available room count in the Floor schema
-    const floor = await Floor.findOne({ rooms: roomId }); // Find the floor that has the room
+    const floor = await Floor.findOne({ rooms: roomId }).session(session);
+
+    // Decrease the available room count on the floor
     if (floor) {
-      floor.availableQuantity -= 1; // Decrease available room count by 1
-      await floor.save();
+      floor.availableQuantity -= 1;
+      await floor.save({ session: session });
     }
 
-    // Send a frontend message to tell the user to pay in cart to continue the reservation
+    // Commit the transaction and send a success message
+    await session.commitTransaction();
     res.status(200).json({ message: 'Room reservation added to cart. Please complete your payment to confirm the reservation.' });
-
   } catch (error) {
     console.error(error);
+    // Rollback the transaction in case of an error and send an error message
+    await session.abortTransaction();
     res.status(500).json({ message: 'Something went wrong' });
-  }
-};
-
-exports.getRoomReservations = async (req, res) => {
-  try {
-    const userReservations = await RoomReservation.find({ user: req.user._id });
-    res.status(200).json(userReservations);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Something went wrong' });
+  } finally {
+    // End the session
+    session.endSession();
   }
 };
