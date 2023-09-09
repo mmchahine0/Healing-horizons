@@ -67,4 +67,20 @@ exports.chooseSpecialty = async (req, res) => {
     console.error("Error updating specialty: ", err);
     return res.status(500).json({ message: "Error updating specialty" });
   }
-}; 
+};
+
+exports.getSpeciality = async (req, res) => {
+  try {
+
+    const doctorsWithSpecialty = await User.find({ specialty });
+
+    if (!doctorsWithSpecialty || doctorsWithSpecialty.length === 0) {
+      return res.status(404).json({ message: 'No doctors found with the specified specialty' });
+    }
+
+    return res.status(200).json({ message: 'Doctors with specified specialty found', data: doctorsWithSpecialty });
+  } catch (err) {
+    console.error('Error fetching doctors with specialty: ', err);
+    return res.status(500).json({ message: 'Error fetching doctors with specialty' });
+  }
+};
