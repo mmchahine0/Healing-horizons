@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
-const port = 3003;
+const port = 3500;
 require('dotenv').config();
 
 const authRouter = require('./routes/authroutes.js');
@@ -21,7 +21,7 @@ const roomRoutes = require('./routes/roomRoutes');
 const floorRoutes = require('./routes/floorRoutes');
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
 mongoose.set("strictQuery", true);
 mongoose
@@ -46,6 +46,8 @@ app.use("/survey", surveyRoutes)
 app.use("/doctor", doctorRoutes)
 app.use("/room", roomRoutes)
 app.use("/floor", floorRoutes)
+
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

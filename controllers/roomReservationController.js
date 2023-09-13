@@ -102,3 +102,14 @@ exports.reserveRoom = async (req, res) => {
     session.endSession();
   }
 };
+exports.getRoomReservations = async (req, res) => {
+  try {
+    const rooms = await RoomReservation.find();
+    if (users.length == 0) {
+      return res.status(404).json({ message: "No room reservations found" });
+    }
+    return res.status(200).json({ message: "room reservations", data: rooms });
+  } catch (err) {
+    console.log(err)
+  }
+}

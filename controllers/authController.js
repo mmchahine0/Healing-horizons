@@ -26,9 +26,6 @@ exports.signup = async (req, res) => {
       return res.status(409).json({ message: "Username or email already exists" });
     }
 
-    if (req.body.password !== req.body.confirmPassword) {
-      return res.status(400).json({ message: "Passwords don't match" });
-    }
     const newUser = await User.create({
       fullname: req.body.fullname,
       username: req.body.username,
