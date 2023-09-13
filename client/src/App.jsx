@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 
-//pages and components
+//pages 
 import Home from "./pages/Home"
 import Appointment from './pages/appointment';
 import Bill from './pages/bill';
@@ -20,17 +20,30 @@ import Survey from './pages/survey';
 import AdminPage from './pages/adminPage';
 import NotFound from './pages/notFound';
 
+//components
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
+      <Navbar />
           <Routes>
             <Route
               path="*"
               element={<NotFound />}
             />
             <Route
-              path="/"
+              path="/login"
+              element={<Login />}
+            />
+            <Route
+              path="/signup"
+              element={<Signup />}
+            />
+            <Route
+              path="/home"
               element={<Home />}
             />
             <Route
@@ -66,14 +79,6 @@ function App() {
               element={<EmailSend />}
             />
             <Route
-              path="/login"
-              element={<Login />}
-            />
-            <Route
-              path="/signup"
-              element={<Signup />}
-            />
-            <Route
               path="/meds"
               element={<Meds />}
             />
@@ -94,6 +99,7 @@ function App() {
               element={<Survey />}
             />
           </Routes>
+      <Footer />
       </BrowserRouter>
     </div>
   );

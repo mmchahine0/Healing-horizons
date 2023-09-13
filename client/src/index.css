@@ -1,0 +1,12 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+}
+body {
+  /* background: linear-gradient(#0093E9,#80D0C7);  */
+  background-color: aliceblue;
+}
+body {
+  font-family: Arial, sans-serif;
+}
