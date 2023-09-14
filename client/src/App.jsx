@@ -10,7 +10,7 @@ import ChooseSickness from './pages/chooseSickness';
 import DoctorList from './pages/doctorList';
 import DoctorProfile from './pages/doctorProfile';
 import EmailSend from './pages/emailSend';
-import Login from './pages/login';
+import LoginS from './pages/login';
 import Signup from './pages/signup';
 import Meds from './pages/meds';
 import PatientProfile from './pages/patientProfile';
@@ -19,89 +19,100 @@ import ChattingAi from './pages/chattingAi';
 import Survey from './pages/survey';
 import AdminPage from './pages/adminPage';
 import NotFound from './pages/notFound';
-
 //components
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import Layout from './components/Layout';
+import { AuthProvider } from './context/AuthProvider';
+import RequireAuth from './components/RequireAuth';
 
 function App() {
   return (
-    <div className="App">
+    <>
       <BrowserRouter>
-      <Navbar />
+        <AuthProvider>
           <Routes>
+            <Route element={<Layout/>}>
             <Route
-              path="*"
+              path="/*"
               element={<NotFound />}
             />
+            {/* public routes */}
             <Route
               path="/login"
-              element={<Login />}
+              element={<LoginS />}
             />
             <Route
               path="/signup"
               element={<Signup />}
             />
-            <Route
+            {/* protected */}
+            <Route element={<RequireAuth allowedRole={["user"]}/>}>
+              <Route
               path="/home"
               element={<Home />}
-            />
+              />
+              <Route
+              path="/appointment"
+              element={<Appointment />}
+              />
+              <Route
+              path="/cart"
+              element={<Cart />}
+              />
+              <Route
+              path="/bill"
+              element={<Bill />}
+              />
+              <Route
+              path="/chooseSickness"
+              element={<ChooseSickness />}
+              />
+              <Route
+              path="/doctors"
+              element={<DoctorList />}
+              />
+              <Route
+              path="/doctorProfile"
+              element={<DoctorProfile />}
+              />
+              <Route
+              path="/emailSend"
+              element={<EmailSend />}
+              />
+              <Route
+              path="/meds"
+              element={<Meds />}
+              />
+              <Route
+              path="/patientProfile"
+              element={<PatientProfile />}
+                />
+                <Route
+              path="/room"
+              element={<Room />}
+              />
+              <Route
+              path="/chatting"
+              element={<ChattingAi />}
+              />
+              {/* only once */}
+              <Route
+              path="/survey"
+              element={<Survey />}
+              />
+          </Route>
+            {/* specified role to precced */}
+          <Route element={<RequireAuth allowedRole={["doctor","admin"]}/>}>
+
             <Route
               path="/adminPage"
               element={<AdminPage/>}
             />
-            <Route
-              path="/appointment"
-              element={<Appointment />}
-            />
-            <Route
-              path="/cart"
-              element={<Cart />}
-            />
-            <Route
-              path="/bill"
-              element={<Bill />}
-            />
-            <Route
-              path="/chooseSickness"
-              element={<ChooseSickness />}
-            />
-            <Route
-              path="/doctors"
-              element={<DoctorList />}
-            />
-            <Route
-              path="/doctorProfile"
-              element={<DoctorProfile />}
-            />
-            <Route
-              path="/emailSend"
-              element={<EmailSend />}
-            />
-            <Route
-              path="/meds"
-              element={<Meds />}
-            />
-            <Route
-              path="/patientProfile"
-              element={<PatientProfile />}
-            />
-            <Route
-              path="/room"
-              element={<Room />}
-            />
-            <Route
-              path="/chatting"
-              element={<ChattingAi />}
-            />
-            <Route
-              path="/survey"
-              element={<Survey />}
-            />
+          </Route>
+            </Route>
           </Routes>
-      <Footer />
+        </AuthProvider>
       </BrowserRouter>
-    </div>
+    </>
   );
 }
 

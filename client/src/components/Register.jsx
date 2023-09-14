@@ -8,7 +8,6 @@ const USERNAME_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const EMAIL_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 const FULLNAME_REGEX = /^[A-Za-z\s]+$/;
-const REGISTER_URL = '/auth/signup';
 
 const Register = () => {
     const fullnameRef = useRef();
@@ -88,7 +87,7 @@ const Register = () => {
                 }
             );
             console.log(response?.data);
-            console.log(response?.accessToken);
+            console.log(response?.token);
             console.log(JSON.stringify(response))
             setSuccess(true);
             // Clear state and controlled inputs
@@ -115,7 +114,7 @@ const Register = () => {
                 <section className="sectionRegister">
                     <h1 style={{color:"#fff"}}>Success!</h1>
                     <p>
-                        <a href="#">Sign In Here!</a>
+                        <a href="/login">Sign In Here!</a>
                     </p>
                 </section>
             ) : (

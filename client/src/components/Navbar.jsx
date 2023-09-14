@@ -24,6 +24,7 @@ class Navbar extends Component {
               <li><a href="/cart">Cart</a></li>
               <li><a href="/doctors">Doctors</a></li>
               <li><a href="/chatting">Chat</a></li>
+              <li><a href="/login">Sign out</a></li>
 
               </ul>
           </div>

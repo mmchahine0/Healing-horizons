@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
     fullname: {
       type: String,
       required: [true, "Please enter your fullname"],
-      minlenght: 3,
+      minlength: 3,
       trim: true,
     },
     username: {
@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      minlenght: 8,
+      minlength: 8,
       required: [true, "Please enter your Password"]
     },
     role: {

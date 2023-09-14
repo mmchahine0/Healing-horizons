@@ -9,10 +9,13 @@
 .signup {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: center; 
   align-items: center;
   min-height: 100vh; 
   padding: 1rem 0.5rem;
+  background-image: url('../images/Background.jpg');
+  background-size: cover; 
+  background-repeat: no-repeat;
 }
 
 .sectionRegister {
@@ -21,10 +24,14 @@
   min-height: 400px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center; 
+  align-items: center; 
   padding: 1rem;
-  background: #022d36;
+  background: linear-gradient(#0084ff,#3b9ceb);
+  border: #fcfcfc solid 2px;
+  border-radius: 20px;
 }
+
 
 .formRegistry {
     display: flex;

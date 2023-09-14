@@ -1,19 +1,13 @@
 import { Link } from "react-router-dom";
+import Login from "../components/Login"
 
-const Login = () => {
-  // useEffect(() =>
-  //   setTimeout(() => {
-  //   navigate("/")},
-  //   1000)) to navigate after submission
+const LoginS = () => {
+  
   return (
-    <>
-    <nav>
-    </nav>
-    <div className="home">
-      <h2>Home</h2>
+    <div className="signup">
+      <Login/>
     </div>
-    </>
   );
 }
 
-export default Login;
+export default LoginS;

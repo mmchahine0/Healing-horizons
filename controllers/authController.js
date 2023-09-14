@@ -5,15 +5,42 @@ const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const crypto = require('crypto');
 const sendMail = require("../utils/email").sendMail;
+const ms = require('ms');
 
 const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES })
-}
-const createToken = (user, statusCode, message, res) => {
-  const token = signToken(user._id)
-  res.status(statusCode).json({ message: message, status: "success", token });
-}
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES });
+};
 
+const createToken = (user, role, statusCode, message, res) => {
+  const token = signToken(user._id);
+  const expirationTime = new Date(Date.now() + ms(process.env.JWT_COOKIE_EXPIRES_IN));
+
+  res.cookie('jwt', token, {
+    expires: expirationTime,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+  });
+  res.status(statusCode).json({ role, message: message, status: 200, token });
+};
+
+exports.login = async (req, res) => {
+  try {
+    const checkUser = await User.findOne({ email: req.body.email });
+    if (!(validator.isEmail(req.body.email))) {
+      return res.status(400).json({ message: "Invalid email" });
+    }
+    if (!checkUser) {
+      return res.status(404).json({ message: "User is not found" });
+    }
+    if (!(await checkUser.checkPassword(req.body.password, checkUser.password))) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+    return createToken(checkUser, checkUser.role, 200, `Welcome ${checkUser.fullname} !`, res);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Something went wrong during the log in process, Please try again later." });
+  }
+};
 
 exports.signup = async (req, res) => {
   try {
@@ -32,7 +59,7 @@ exports.signup = async (req, res) => {
       email: req.body.email,
       password: req.body.password,
     });
-    return createToken(newUser, 201, `Dear ${req.body.fullname} your account was created successfully! `, res);
+    return createToken(newUser, newUser.role, 201, `Dear ${req.body.fullname} your account was created successfully! `, res);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: "Something went wrong during the sign up process, Please try again later." });
@@ -74,24 +101,6 @@ exports.makeDoctor = async (req, res) => {
 };
 
 
-exports.login = async (req, res) => {
-  try {
-    const checkUser = await User.findOne({ email: req.body.email });
-    if (!(validator.isEmail(req.body.email))) {
-      return res.status(400).json({ message: "Invalid email" })
-    }
-    if (!checkUser) {
-      return res.status(404).json({ message: "User is not found" });
-    }
-    if (!(await checkUser.checkPassword(req.body.password, checkUser.password))) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-    return createToken(checkUser, 200, "Logged in successfully", res)
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "Something went wrong during the log in process, Please try again later." })
-  }
-};
 
 exports.updatePassword = async (req, res) => {
   try {
