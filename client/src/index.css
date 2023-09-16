@@ -4,8 +4,7 @@
   box-sizing: border-box;
 }
 body {
-  /* background: linear-gradient(#0093E9,#80D0C7);  */
-  background-color: aliceblue;
+  background: linear-gradient(#ffffff,hsl(190, 25%, 25%));  
 }
 body {
   font-family: Arial, sans-serif;

@@ -1,0 +1,136 @@
+.containerHome {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start; 
+  padding: 20px;
+}
+.firstColumnHome {
+  text-align: left;
+  margin-left: 10%;
+  margin-bottom: 20px;
+  border-bottom: #022d36 solid;
+  background: url('../images/roomblur.png');
+}
+.secondColumnHome {
+  text-align: right;
+  margin-right: 10%;
+  margin-bottom: 20px;
+  border-bottom: #022d36 solid;
+  background: url('../images/appointmentblur.png');
+}
+.thirdColumnHome {
+  text-align: left;
+  margin-left: 10%;
+  margin-bottom: 20px;
+  border-bottom: #022d36 solid;
+  background: url('../images/medblur.png');
+}
+.forthColumnHome{
+  text-align: right;
+  margin-right: 10%;
+  margin-bottom: 20px;
+  border-bottom: #022d36 solid;
+  background: url('../images/doctorblur.png');
+}
+.circleColumnHome {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.column-textHome {
+  margin-top: 10px;
+}
+
+.buttonHome {
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+  padding: 10px 20px;
+  margin-top: 10px;
+  background-color: #022d36; 
+  color: white; 
+  border: none;
+  font-weight: 600;
+
+}
+.buttonHome:hover {
+  background-color: #0492c2; 
+  transition: 0.3s ease-in-out;
+}
+
+.health-infoHome {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-container img {
+  width: 100%; 
+  border-radius: 8px; 
+}
+
+.column-textHome {
+  position: absolute;
+  top: 30%;
+  left: 10%;
+  transform: translateY(-50%);
+  color: white; 
+  font-size: 18px; 
+  background: rgba(2, 45, 54, 0.3); 
+  letter-spacing: 1px;
+  font-weight: 500; 
+  font-family: 'Arial', sans-serif; /* Change to your preferred font-family */
+  padding: 10px 20px; 
+}
+
+.info-itemHome {
+  width: 200px;
+  height: 200px;
+  background-color: #022d36;
+  border: solid;
+  border-radius: 50%;
+  border-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: height 0.3s ease-in-out;
+}
+
+.info-itemHome:hover {
+  height: 300px; 
+}
+
+.info-itemHome .health-tip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  background-color: #0492c2;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.info-itemHome i {
+  font-size: 3em; 
+  color: #fff; 
+}
+.info-itemHome:hover i {
+  opacity: 0; 
+}
+.info-itemHome:hover .health-tip {
+  opacity: 1;
+  transform: translateY(-300%);
+}

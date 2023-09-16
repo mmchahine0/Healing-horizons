@@ -18,12 +18,9 @@ class Navbar extends Component {
           <div>   
               <ul id="navbar" className={this.state.clicked ? "#navbar active":"#navbar"}>
               <li><a href="/home">Home</a></li>
-              <li><a href="/room">Room reservation</a></li>
-              <li><a href="/chooseSickness">Appointment</a></li>
-              <li><a href="/meds">Meds shopping</a></li>
+              <li><a href="/patientProfile">Profile</a></li>
               <li><a href="/cart">Cart</a></li>
-              <li><a href="/doctors">Doctors</a></li>
-              <li><a href="/chatting">Chat</a></li>
+              <li><a href="/chatting">Chat with AI</a></li>
               <li><a href="/login">Sign out</a></li>
 
               </ul>

@@ -10,18 +10,7 @@ const Footer = () => {
       <div className="footer">
         <div className='sb_footer section_padding'>
           <div className='sb_footer-links'>
-            <div className='sb_footer-links-div'>
-              <h4 style={{color:"white"}}>For Business</h4>
-              <a className='sb_footer-links-divH4A' href="">
-                <p>Employee</p>
-              </a>
-              <a className='sb_footer-links-divH4A' href="">
-                <p>health</p>
-              </a>
-              <a className='sb_footer-links-divH4A' href="">
-                <p>individual</p>
-              </a>
-            </div>
+            
             <div className='sb_footer-links_div'>
              <h4>Resources</h4> 
             <a href="">

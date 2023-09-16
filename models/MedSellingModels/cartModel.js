@@ -19,8 +19,8 @@ const cartSchema = new mongoose.Schema(
       ref: "RoomReservation",
     }],
     totalPrice: {
-      type: Schema.Types.Decimal128,
-      default: 0.0,
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }

@@ -5,7 +5,7 @@ import './App.css';
 import Home from "./pages/Home"
 import Appointment from './pages/appointment';
 import Bill from './pages/bill';
-import Cart from './pages/cart';
+import CartS from './pages/cartS';
 import ChooseSickness from './pages/chooseSickness';
 import DoctorList from './pages/doctorList';
 import DoctorProfile from './pages/doctorProfile';
@@ -56,7 +56,7 @@ function App() {
               />
               <Route
               path="/cart"
-              element={<Cart />}
+              element={<CartS />}
               />
               <Route
               path="/bill"

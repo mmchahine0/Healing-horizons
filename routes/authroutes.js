@@ -11,4 +11,5 @@ router.patch('/updatePasssword/:userId', authController.protect, authController.
 router.patch('/forgotPasssword/:userId', authController.forgotPassword);
 router.get("/allusers", authController.protect, authController.getAllUsers);
 
+
 module.exports = router;

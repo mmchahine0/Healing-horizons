@@ -1,18 +1,29 @@
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 
+const BillPage = () => {
+  const location = useLocation();
+  const orderDetails = location.state && location.state.orderDetails;
 
-const Bill = () => {
   return (
-    <>
-    <Navbar />
-    
-    <div className="home">
-      <h2>Home</h2>
+    <div>
+      <h2>Your Order Summary</h2>
+      {orderDetails && (
+        <div>
+          <h3>Order Items:</h3>
+          <ul>
+            {orderDetails.items.map((item) => (
+              <li key={item._id}>
+                {item.productName} - ${item.productPrice} (Quantity: {item.quantity})
+              </li>
+            ))}
+          </ul>
+          <p>Total Price: ${orderDetails.totalPrice}</p>
+        </div>
+      )}
     </div>
-    <Footer />
-    </>
   );
-}
+};
 
-export default Bill;
+export default BillPage;
+

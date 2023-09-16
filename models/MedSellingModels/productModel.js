@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const productSchema = new mongoose.Schema(
   {
+    image: {
+      type: String
+    },
     productName: {
       type: String,
       required: [true, "Add the product name"],
@@ -21,8 +24,8 @@ const productSchema = new mongoose.Schema(
       default: "",
     },
     productPrice: {
-      type: Schema.Types.Decimal128,
-      default: 0.0,
+      type: Number,
+      default: 0,
       required: [true, "Add the product price"],
     },
     productQuantity: {

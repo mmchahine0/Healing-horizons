@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const app = express();
 const port = 3500;
 require('dotenv').config();
@@ -20,6 +21,7 @@ const doctorRoutes = require('./routes/doctorRoutes.js')
 const roomRoutes = require('./routes/roomRoutes');
 const floorRoutes = require('./routes/floorRoutes');
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 

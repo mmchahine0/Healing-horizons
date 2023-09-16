@@ -3,6 +3,7 @@ const router = express.Router();
 const authController = require('../controllers/authController.js');
 const uploadImage = require('../controllers/uploadController.js');
 
-router.post("/profile-pic", authController.protect, uploadImage.uploadImage, uploadImage.uploadToS3);
+router.post('/uploadProductimg', authController.protect, uploadImage.uploadProductPicture);
+router.post('/uploadProfileimg', authController.protect, uploadImage.uploadProfilePicture);
 
 module.exports = router;

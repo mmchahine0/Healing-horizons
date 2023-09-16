@@ -13,14 +13,14 @@ const signToken = (id) => {
 
 const createToken = (user, role, statusCode, message, res) => {
   const token = signToken(user._id);
-  const expirationTime = new Date(Date.now() + ms(process.env.JWT_COOKIE_EXPIRES_IN));
 
-  res.cookie('jwt', token, {
-    expires: expirationTime,
+  const cookieOptions = {
+    expires: new Date(Date.now() + ms(process.env.JWT_COOKIE_EXPIRES_IN)),
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-  });
-  res.status(statusCode).json({ role, message: message, status: 200, token });
+    secure: process.env.NODE_ENV === 'production' ? true : false,
+    sameSite: 'None',
+  };
+  res.status(statusCode).cookie('jwt', token, cookieOptions).json({ role, message, status: 200, token });
 };
 
 exports.login = async (req, res) => {

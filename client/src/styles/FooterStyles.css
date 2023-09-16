@@ -1,14 +1,16 @@
-.section_padding{
+/* Your existing CSS */
+
+.section_padding {
   padding: 4rem 4rem;
 }
-.footer{
-  background-color:#022d36;
+.footer {
+  background-color: #022d36;
 }
-.sb_footer{
+.sb_footer {
   display: flex;
   flex-direction: column;
 }
-.sb_footer-links{
+.sb_footer-links {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -18,111 +20,114 @@
   text-align: left;
   margin-bottom: 2rem;
 }
-.sb_footer-links_div{
+.sb_footer-links_div {
   width: 150px;
-  margin:1rem;
+  margin: 1rem;
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
   color: azure;
-
 }
-
-a{
-  color: rgb(175,175,179);
-  text-decoration: none;
+.sb_footer-links-divH4A {
+  padding: 1px;
 }
-.sb_footer-links-divH4A{
-  padding: 1px;;
-}
-a:hover {
-  color: #0492c2; /* Change color on hover */
-}
-
-.socialmedia{
+.socialmedia {
   display: flex;
   flex-direction: row;
 }
-.socialmedia img{
+.socialmedia img {
   width: 80%;
 }
 .socialmedia img:hover {
-  transform: scale(1.1); 
+  transform: scale(1.1);
 }
-.sb_footer-links_div h4{
+.sb_footer-links_div h4 {
   font-size: 14px;
   line-height: 17px;
   margin-bottom: 0.9rem;
 }
-.sb_footer-links_div p{
+.sb_footer-links_div p {
   font-size: 12px;
   line-height: 15px;
   margin: 0.5rem 0;
   cursor: pointer;
+  color: white; 
+  text-decoration: none; 
 }
-.sb_footer-below{
+.sb_footer-links_div p:hover {
+  color: #0492c2; 
+}
+
+.sb_footer-below {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin-top: 0.2rem;
 }
-.sb_footer-below-links{
+.sb_footer-below-links {
   display: flex;
   flex-direction: row;
 }
-.sb_footer-below-links p{
+.sb_footer-below-links p {
   font-size: 13px;
   line-height: 15px;
   margin-left: 2rem;
   color: azure;
   font-weight: 500;
 }
-hr{
+hr {
   color: azure !important;
   width: 100%;
 }
-.sb_footer-copyright p{
+.sb_footer-copyright p {
   font-size: 13px;
   line-height: 15px;
-  color: rgb(255,255,255);
+  color: rgb(255, 255, 255);
   font-weight: 500;
 }
-@media screen and (max-width:850px){
-  .sb_footer-heading h1{
+@media screen and (max-width: 850px) {
+  .sb_footer-heading h1 {
     font-size: 44px;
     line-height: 50px;
   }
 }
-
-@media screen and (max-width:550px){
-  .sb_footer-heading h1{
+@media screen and (max-width: 550px) {
+  .sb_footer-heading h1 {
     font-size: 34px;
     line-height: 42px;
   }
-  .sb_footer-links div{
-    margin:1rem 0;
+  .sb_footer-links div {
+    margin: 1rem 0;
   }
-  .sb_footer-btn p{
+  .sb_footer-btn p {
     font-size: 14px;
     line-height: 20px;
   }
-  .sb_footer-below{
+  .sb_footer-below {
     flex-direction: column;
     justify-content: left;
   }
-  .sb_footer-below-links{
+  .sb_footer-below-links {
     flex-direction: column;
   }
-  .sb_footer-below-links p{
+  .sb_footer-below-links p {
     margin-left: 0rem;
     margin-top: 1rem;
   }
 }
-
-@media screen and (max-width:400px){
-  .sb_footer-heading h1{
+@media screen and (max-width: 400px) {
+  .sb_footer-heading h1 {
     font-size: 27px;
     line-height: 30px;
   }
 }
 
+
+.sb_footer-below-links a {
+  text-decoration: none; 
+  color: white; 
+}
+
+.sb_footer-below-links a:hover {
+  color: #0492c2; 
+}

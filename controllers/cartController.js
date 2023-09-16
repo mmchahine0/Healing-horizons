@@ -57,8 +57,7 @@ exports.addToCart = async (req, res) => {
     let cart = await Cart.findOne({ cartOwner: cartOwner._id }).session(session);
     if (!cart) {
       cart = await Cart.create({
-        cartOwner: cartOwner._id,
-        totalPrice: 0,
+        cartOwner: cartOwner._id
       }, { session: session });
     }
 
@@ -83,15 +82,13 @@ exports.addToCart = async (req, res) => {
       cart.totalPrice += price;
 
       await product.save({ session: session });
-    } else if (req.body.checkInDate && req.body.checkOutDate) {
+    } else if (req.body.checkInDate && req.body.checkOutDate && req.body.room) {
       // Handling room reservation
       const availableRooms = await getAvailableRooms(req.body.checkInDate, req.body.checkOutDate);
       if (availableRooms <= 0) {
         return res.status(409).json({ message: "Sorry, no rooms are available for the selected dates" });
       }
 
-      // Calculate the total price for the room reservation based on the room type and duration
-      // You need to implement this calculation logic based on your business rules
       const roomReservationPrice = calculateRoomReservationPrice(req.body.checkInDate, req.body.checkOutDate);
 
       const newReservation = new RoomReservation({
@@ -103,7 +100,6 @@ exports.addToCart = async (req, res) => {
         status: 'pending',
       });
 
-      // Update the cart's total price
       cart.totalPrice += roomReservationPrice;
 
       cart.roomReservation.push(newReservation._id);
@@ -123,5 +119,21 @@ exports.addToCart = async (req, res) => {
     return res.status(500).json({ message: err.message });
   } finally {
     session.endSession();
+  }
+};
+
+exports.getCartContent = async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ cartOwner: req.user._id })
+      .populate('products');  // Populate the product details
+
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found for the user" });
+    }
+
+    return res.status(200).json({ cart });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: err.message });
   }
 };
