@@ -58,20 +58,19 @@ const Cart = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;  // Display a loading message or spinner while loading
+    return <div style={{fontSize: "25px"}}>No available cart items</div>;  
   }
 
   return (
     <div className="cart-container">
       <h2>Your Cart</h2>
-      {console.log('Rendering cart:', cart)} {/* Add this line */}
       {cart ? (
   <ul className="cart-list">
   {cart.products.map((product) => {
     return (
       <li key={product._id + '_' + product.productName} className="cart-item">
         <div>
-          <strong>{product.productName}</strong> - ${product.productPrice} (Quantity: {product.productQuantity})
+          <strong>{product.productName}</strong> - ${product.productPrice} 
           <button onClick={() => handleRemoveFromCart(product._id)}>Remove</button>
         </div>
       </li>
@@ -80,6 +79,7 @@ const Cart = () => {
 </ul>
 ) : (
   <div>
+    {setLoading(false)}
     <p>No available cart items</p>
   </div>
 )}

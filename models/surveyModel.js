@@ -18,9 +18,8 @@ const surveySchema = new mongoose.Schema(
     criticalConditions: {
       type: String,
     },
-    done: {
-      type: Boolean,
-      default: false,
+    dateofbirth: {
+      type: Date,
     },
   },
   { timestamps: true }

@@ -20,6 +20,7 @@ const surveyRoutes = require('./routes/surveyRoutes.js')
 const doctorRoutes = require('./routes/doctorRoutes.js')
 const roomRoutes = require('./routes/roomRoutes');
 const floorRoutes = require('./routes/floorRoutes');
+const UserRoutes = require('./routes/UserRoutes');
 
 app.use(cookieParser());
 app.use(express.json());
@@ -48,6 +49,7 @@ app.use("/survey", surveyRoutes)
 app.use("/doctor", doctorRoutes)
 app.use("/room", roomRoutes)
 app.use("/floor", floorRoutes)
+app.use("/user", UserRoutes)
 
 
 app.listen(port, () => {

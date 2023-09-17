@@ -1,27 +1,29 @@
 const User = require('../models/userModel.js');
 const Survey = require('../models/surveyModel.js');
 
-
 exports.submitSurvey = async (req, res) => {
   try {
-    const { allergies, medicalHistory, criticalConditions } = req.body;
+    const { allergies, medicalHistory, criticalConditions, dateofbirth } = req.body;
 
     const user = await User.findById(req.user._id);
+    let userSurvey = await Survey.findOne({ user: req.user._id });
 
-    const existingSurvey = await Survey.findOne(user);
-    if (existingSurvey && existingSurvey.done) {
-      return res.status(400).json({ message: 'Survey already submitted' });
-    } const newSurvey = new Survey({
-      user,
-      allergies,
-      medicalHistory,
-      criticalConditions,
-      done: true
-    });
+    if (userSurvey) {
+      userSurvey.allergies = allergies;
+      userSurvey.medicalHistory = medicalHistory;
+      userSurvey.criticalConditions = criticalConditions;
+      userSurvey.dateofbirth = dateofbirth;
+    } else {
+      userSurvey = new Survey({
+        user,
+        allergies,
+        medicalHistory,
+        criticalConditions,
+        dateofbirth,
+      });
+    }
 
-    user.surveys.push(newSurvey);
-    await newSurvey.save();
-    await user.save();
+    await userSurvey.save();
 
     res.status(200).json({ message: 'Survey submitted' });
   } catch (error) {
@@ -32,10 +34,13 @@ exports.submitSurvey = async (req, res) => {
 
 exports.getSurvey = async (req, res) => {
   try {
-    const userSurvey = await Survey.findOne({ user: req.user._id });
+    const userId = req.params.userId;
+    const userSurvey = await Survey.findOne({ user: userId });
+
     if (!userSurvey) {
       return res.status(404).json({ message: 'Survey not found' });
     }
+
     res.status(200).json(userSurvey);
   } catch (error) {
     console.error(error);

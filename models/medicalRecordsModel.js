@@ -2,22 +2,26 @@ const mongoose = require('mongoose');
 
 const medicalRecordSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     diagnosis: {
       type: String,
       required: true,
     },
-    medications: [{
-      name: String,
-      dosage: String,
-    }],
-    labReports: [{
+    medications: {
       type: String,
-    }],
-    prescriptions: [{
-      medication: String,
-      dosage: String,
-      instructions: String,
-    }],
+
+    },
+    labReports: {
+      type: String,
+    },
+    prescriptions: {
+      type: String,
+
+    },
     additionalNotes: {
       type: String,
     },

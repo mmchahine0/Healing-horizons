@@ -59,9 +59,6 @@ const userSchema = new mongoose.Schema(
     bio: {
       type: String,
     },
-    dateofbirth: {
-      type: Date,
-    },
     medicalRecords: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'MedicalRecord',
