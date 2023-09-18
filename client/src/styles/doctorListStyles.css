@@ -1,0 +1,46 @@
+/* CSS for DoctorList component */
+
+.doctor-list {
+  padding: 20px;
+}
+
+.doctor-list h1 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.doctor-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.doctor-list li {
+  margin-bottom: 16px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.doctor-list li img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 16px;
+}
+
+.doctor-list li button {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.doctor-list li button:hover {
+  background-color: #2980b9;
+}
+
+/* Additional styling for Navbar and Footer components can be added here */

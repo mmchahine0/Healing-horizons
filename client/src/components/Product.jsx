@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-const Product = ({ productId, productName, productDescription, productPrice, productQuantity, image }) => {
+const Product = ({ productId, productName, productDescription, productPrice, productQuantity, productImage }) => {
   const handleAddToCart = async () => {
     try {
       const response = await axios.post('http://127.0.0.1:3500/cart/add-to-cart', {
@@ -17,7 +17,7 @@ const Product = ({ productId, productName, productDescription, productPrice, pro
   return (
     <div className="product-card">
       <div className="product-image">
-        <img src={image} alt={productName} />
+        <img src={productImage} alt={productName} />
       </div>
       <div className="product-details">
         <h3>{productName}</h3>

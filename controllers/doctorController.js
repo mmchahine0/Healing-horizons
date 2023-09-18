@@ -84,3 +84,39 @@ exports.getSpeciality = async (req, res) => {
     return res.status(500).json({ message: 'Error fetching doctors with specialty' });
   }
 };
+
+exports.getDoctors = async (req, res) => {
+  try {
+    const doctors = await User.find({ role: 'doctor' });
+
+    if (!doctors || doctors.length === 0) {
+      return res.status(404).json({ message: 'No doctors found' });
+    }
+
+    return res.status(200).json({ doctors });
+  } catch (error) {
+    console.error('Error fetching doctors:', error);
+    return res.status(500).json({ message: 'Error fetching doctors' });
+  }
+};
+
+exports.getADoctor = async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const doctor = await User.findById(userId);
+
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    if (doctor.role !== 'doctor') {
+      return res.status(400).json({ message: 'User is not a doctor' });
+    }
+
+    return res.status(200).json({ doctor });
+  } catch (error) {
+    console.error('Error fetching doctor:', error);
+    return res.status(500).json({ message: 'Error fetching doctor' });
+  }
+};

@@ -122,6 +122,60 @@ exports.addToCart = async (req, res) => {
   }
 };
 
+exports.removeFromCart = async (req, res) => {
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const cartOwner = await User.findOne({ _id: req.user._id });
+    if (!cartOwner) {
+      return res.status(404).json({ message: "A cart should have an owner" });
+    }
+
+    let cart = await Cart.findOne({ cartOwner: cartOwner._id }).session(session);
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    const product = await Product.findOne({ _id: req.params.productId });
+    if (!product) {
+      return res.status(404).json({ message: "Product Not Found" });
+    }
+
+    const productQuantity = parseInt(req.body.productQuantity, 10) || 1;  // Ensure a valid quantity
+
+    // Add the removed product quantity back to the product's quantity in the database
+    product.productQuantity += productQuantity;
+
+    const productPrice = product.productPrice;
+    const price = productPrice * productQuantity;
+
+    // Update the cart and remove the first occurrence of the product
+    const productIndex = cart.products.findIndex(productId => String(productId) === req.params.productId);
+    if (productIndex !== -1) {
+      // Found the product, remove it
+      cart.products.splice(productIndex, 1);
+      cart.totalPrice -= price;
+    }
+
+    await product.save({ session: session });
+    await cart.save({ session: session });
+    await session.commitTransaction();
+
+    return res.status(200).json({ message: 'Item removed from the cart successfully.' });
+  } catch (err) {
+    await session.abortTransaction();
+    console.error(err);
+    return res.status(500).json({ message: err.message });
+  } finally {
+    session.endSession();
+  }
+};
+
+
+
+
 exports.getCartContent = async (req, res) => {
   try {
     const cart = await Cart.findOne({ cartOwner: req.user._id })

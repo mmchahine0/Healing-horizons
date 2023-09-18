@@ -1,4 +1,4 @@
-const AWS = require('../utils/awsS3.js');
+const { uploadToS3 } = require('../utils/awsS3.js');
 const multer = require('multer');
 const User = require('../models/userModel.js');
 const Product = require('../models/MedSellingModels/productModel.js');
@@ -26,7 +26,7 @@ exports.uploadImage = upload.single("image")
 const uploadProductPictureToS3 = async (file, productId) => {
   try {
     const params = {
-      Bucket: process.env.PRODUCT_BUCKET_NAME,
+      Bucket: process.env.BUCKET_NAME,
       Key: `${Date.now()}-${file.originalname}`,
       Body: file.buffer,
     };
@@ -45,8 +45,8 @@ const uploadProductPictureToS3 = async (file, productId) => {
 
 exports.uploadProductPicture = async (req, res) => {
   try {
-    const { productId } = req.body; // Assuming productId is sent in the request body
-
+    const { productId } = req.params;
+    console.log(productId);
     if (!req.file || !productId) {
       return res.status(400).json({ message: 'Invalid request, missing file or product ID' });
     }
@@ -59,35 +59,36 @@ exports.uploadProductPicture = async (req, res) => {
   }
 };
 
-exports.uploadProfilePicture = async (req, res) => {
+const uploadProfilePictureToS3 = async (file, userId) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No image file provided' });
-    }
-
     const params = {
       Bucket: process.env.BUCKET_NAME,
-      Key: `${Date.now()}-${req.file.originalname}`,
-      Body: req.file.buffer,
+      Key: `${Date.now()}-${file.originalname}`,
+      Body: file.buffer,
     };
 
     const imageUrl = await uploadToS3(params);
 
-    const updatedUser = await updateProfilePicture(req.user._id, imageUrl);
+    // Update the user's profile with the image URL
+    await User.findByIdAndUpdate(userId, { image: imageUrl });
 
-    return res.status(200).json({ message: 'Profile picture uploaded successfully', user: updatedUser });
+    return imageUrl;
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Something went wrong' });
+    console.error('Error uploading profile picture to S3:', error);
+    throw new Error('Failed to upload profile picture to S3');
   }
 };
 
-const updateProfilePicture = async (userId, imageUrl) => {
+exports.uploadProfilePicture = async (req, res) => {
   try {
-    const updatedUser = await User.findByIdAndUpdate(userId, { image: imageUrl }, { new: true });
-    return updatedUser;
-  } catch (err) {
-    console.error('Error updating profile picture:', err);
-    throw new Error('Failed to update profile picture');
+    if (!req.file || !req.user) {
+      return res.status(400).json({ message: 'Invalid request, missing file or user information' });
+    }
+
+    const imageUrl = await uploadProfilePictureToS3(req.file, req.user._id);
+    return res.status(200).json({ message: 'Profile picture uploaded successfully', imageUrl });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Something went wrong' });
   }
 };

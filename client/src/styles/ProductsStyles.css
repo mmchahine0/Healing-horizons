@@ -29,12 +29,17 @@
 }
 
 .product-image img {
-  max-width: 100%; /* Ensure the image doesn't exceed its container's width */
-  height: auto; /* Maintain aspect ratio */
+  max-width: 100%; 
+  height: auto; 
+  width: 150px;
+  height: 150px; 
+  object-fit: cover; 
+  margin-right: 10px;
+  border: #022d36 solid;
 }
 
 .product-details {
-  flex: 3; /* Allow the details to grow to fill available space */
+  flex: 3; 
 }
 
 .product-card button {
@@ -49,5 +54,13 @@
 .product-card button:hover {
   background-color: #2980b9;
 }
+.image-container {
+  display: flex;
+}
+
+.image {
+ 
+}
+
 
 

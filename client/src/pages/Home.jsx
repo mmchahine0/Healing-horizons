@@ -59,7 +59,7 @@ const Home = () => {
           <p style={{ paddingTop: '5px', textAlign:"left" }}>Discover expertise and book appointments</p>
           <p style={{ paddingTop: '5px', textAlign:"left" }}> with trusted healthcare professionals tailored to your needs.</p>
           </div>
-          <button className="buttonHome">Check out our Doctors</button>
+          <a href="/doctorList" className="buttonHome">Check out our Doctors</a>
         </div>
       </div>
 

@@ -12,6 +12,7 @@ exports.bookAppointment = async (req, res) => {
     const doctor = await User.findById(doctorId);
     const patient = await User.findById(patientId);
 
+
     if (!doctor || !patient) {
       return res.status(404).json({ message: "Doctor or patient not found" });
     }
@@ -52,7 +53,19 @@ exports.bookAppointment = async (req, res) => {
     if (!isAvailable) {
       return res.status(400).json({ message: `Dr. ${doctor.fullname} is not available at the selected time. Please check doctor office hour at Dr. ${doctor.fullname}'s Profile` });
     }
+    const selectedAppointmentTime = moment(appointmentDate);
 
+    const existingAppointmentWithin1Hour = await Appointment.findOne({
+      doctor: doctorId,
+      appointmentDate: {
+        $gte: selectedAppointmentTime.clone().subtract(1, 'hour').toDate(),
+        $lt: selectedAppointmentTime.clone().add(1, 'hour').toDate(),
+      },
+    });
+
+    if (existingAppointmentWithin1Hour) {
+      return res.status(400).json({ message: 'Another appointment is already booked within the next 1 hour.' });
+    }
 
     const appointmentData = {
       time: selectedTime,

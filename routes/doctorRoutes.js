@@ -7,5 +7,8 @@ router.post('/update-office-hours', authController.protect, doctorController.upd
 router.post('/update-bio', authController.protect, doctorController.fillBio);
 router.post('/specialty', authController.protect, doctorController.chooseSpecialty);
 router.get('/specialty', authController.protect, doctorController.getSpeciality)
+router.get('/get', authController.protect, doctorController.getDoctors)
+router.get('/getspecific/:userId', authController.protect, doctorController.getADoctor)
+
 
 module.exports = router;

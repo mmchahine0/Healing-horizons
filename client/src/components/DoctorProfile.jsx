@@ -1,49 +1,33 @@
-import React, { useState } from 'react';
-import "../styles/ProfileStyles.css";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
-const DoctorProfile = ({ email, dateofbirth, officeHours, specialty, image, bio, onUpdateDateOfBirth }) => {
-  const [newDateOfBirth, setNewDateOfBirth] = useState(dateofbirth);
+const DoctorProfile = ({userId}) => {
 
-  const handleDateOfBirthChange = (event) => {
-    setNewDateOfBirth(event.target.value);
-  };
-
-  const handleUpdateDateOfBirth = () => {
-    onUpdateDateOfBirth(newDateOfBirth);
-  };
+  const [doctorInfo, setDoctorInfo] = useState({});
+  const [doctorEmail, setDoctorEmail] = useState("");
+  useEffect(() => {
+    axios
+      .get(`http://127.0.0.1:3500/doctor/getspecific/${userId}`)
+      .then((response) => {
+        setDoctorInfo(response.data.doctor);
+        setDoctorEmail(response.data.doctor.email);
+        console.log(response.data.doctor)
+      })
+      .catch((error) => {
+        console.error("Error fetching doctor information:", error);
+      });
+  }, [userId]);
 
   return (
-    <div className="profile-container">
-      <h2>Doctor Profile</h2>
-      <div>
-        <label>Email:</label>
-        <span>{email}</span>
-      </div>
-      <div>
-        <label>Date of Birth:</label>
-        <input type="date" value={newDateOfBirth} onChange={handleDateOfBirthChange} />
-        <button onClick={handleUpdateDateOfBirth}>Update Date of Birth</button>
-      </div>
-      <div>
-        <label>Office Hours:</label>
-        <ul>
-          {officeHours.map((hours, index) => (
-            <li key={index}>{`${hours.day}: ${hours.startTime} - ${hours.endTime}`}</li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <label>Specialty:</label>
-        <span>{specialty}</span>
-      </div>
-      <div>
-        <label>Image:</label>
-        <img src={image} alt="Doctor's profile" />
-      </div>
-      <div>
-        <label>Bio:</label>
-        <span>{bio}</span>
-      </div>
+    <div className="doctor-profile">
+      <h1>Doctor Profile</h1>
+      <img className="profile-image" src={doctorInfo.image} alt={doctorInfo.fullname}></img>
+      <h2>{doctorInfo.fullname}</h2>
+      <p>Email: {doctorEmail}</p>
+      <p>Specialty: {doctorInfo.specialty}</p>
+      <p>Bio: {doctorInfo.bio}</p>
+      <p>Office Hours: {doctorInfo.officeHours}</p>
     </div>
   );
 };

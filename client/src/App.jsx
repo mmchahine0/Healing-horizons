@@ -51,7 +51,7 @@ function App() {
               element={<Home />}
               />
               <Route
-              path="/appointment"
+              path="/appointment/:doctorIdString"
               element={<Appointment />}
               />
               <Route
@@ -67,11 +67,11 @@ function App() {
               element={<ChooseSickness />}
               />
               <Route
-              path="/doctors"
+              path="/doctorList"
               element={<DoctorList />}
               />
               <Route
-              path="/doctorProfile"
+              path="/doctorProfile/:doctorIdString"
               element={<DoctorProfile />}
               />
               <Route
