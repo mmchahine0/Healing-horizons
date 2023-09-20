@@ -6,16 +6,28 @@ exports.updateOfficeHours = async (req, res) => {
 
     // Find the doctor
     const doctor = await User.findById(doctorId);
-    //only doctors can change their office hours
-    if (doctor.role == "user") return res.status(400).json({ message: "You can't access this feature" });
+
+    if (doctor.role === 'user') {
+      return res.status(400).json({ message: "You can't access this feature" });
+    }
 
     if (!doctor) {
       return res.status(404).json({ message: 'Doctor not found' });
     }
 
-    // Update the office hours
-    doctor.officeHours = req.body.officeHours; //array
+    const newOfficeHours = req.body.officeHours;
 
+    const validOfficeHours = newOfficeHours.every(({ day, startTime, endTime }) => (
+      ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].includes(day) &&
+      typeof startTime === 'string' &&
+      typeof endTime === 'string'
+    ));
+
+    if (!validOfficeHours) {
+      return res.status(400).json({ message: 'Invalid office hours format' });
+    }
+
+    doctor.officeHours = newOfficeHours;
     await doctor.save();
 
     return res.status(200).json({ message: 'Office hours updated successfully', data: doctor });
@@ -24,6 +36,7 @@ exports.updateOfficeHours = async (req, res) => {
     return res.status(500).json({ message: 'Error updating office hours' });
   }
 };
+
 exports.fillBio = async (req, res) => {
   try {
     const doctorId = req.user._id;
@@ -71,14 +84,18 @@ exports.chooseSpecialty = async (req, res) => {
 
 exports.getSpeciality = async (req, res) => {
   try {
+    const receivedSpecialty = req.params.specialty;
 
-    const doctorsWithSpecialty = await User.find({ specialty });
+    const doctorsWithSpecialty = await User.find({ specialty: receivedSpecialty });
 
     if (!doctorsWithSpecialty || doctorsWithSpecialty.length === 0) {
       return res.status(404).json({ message: 'No doctors found with the specified specialty' });
     }
 
-    return res.status(200).json({ message: 'Doctors with specified specialty found', data: doctorsWithSpecialty });
+    return res.status(200).json({
+      message: 'Doctors with specified specialty found',
+      data: doctorsWithSpecialty,
+    });
   } catch (err) {
     console.error('Error fetching doctors with specialty: ', err);
     return res.status(500).json({ message: 'Error fetching doctors with specialty' });
@@ -118,5 +135,27 @@ exports.getADoctor = async (req, res) => {
   } catch (error) {
     console.error('Error fetching doctor:', error);
     return res.status(500).json({ message: 'Error fetching doctor' });
+  }
+};
+
+exports.getOfficeHours = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const doctor = await User.findById(userId);
+
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    if (doctor.role !== 'doctor') {
+      return res.status(400).json({ message: 'User is not a doctor' });
+    }
+
+    const officeHours = doctor.officeHours;
+
+    return res.status(200).json({ officeHours });
+  } catch (error) {
+    console.error('Error fetching office hours:', error);
+    return res.status(500).json({ message: 'Error fetching office hours' });
   }
 };

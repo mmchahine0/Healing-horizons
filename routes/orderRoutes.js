@@ -9,9 +9,14 @@ router.post(
   orderController.createNewOrder
 );
 router.post(
-  "/update-order",
+  "/update-order/:orderId",
   authController.protect,
   orderController.updateOrderStatus
+);
+router.get(
+  "/get-order",
+  authController.protect,
+  orderController.getOrdersForUser
 );
 
 module.exports = router;

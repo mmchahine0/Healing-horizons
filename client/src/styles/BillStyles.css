@@ -1,0 +1,39 @@
+
+.order-summary-container {
+  border-top: 1px solid #022d36;
+  border-bottom: 1px solid #022d36;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.order-summary-container h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.order-summary-container ul {
+  list-style: none;
+  padding: 0;
+}
+
+.order-summary-container li {
+  margin-bottom: 5px;
+}
+
+.order-summary-container p {
+  margin-bottom: 10px;
+}
+
+
+.product-imageBill{
+  flex: 1; 
+  margin-right: 20px; 
+  max-width: 100%; 
+  height: auto; 
+  width: 50px;
+  height: 50px; 
+  object-fit: cover; 
+  margin-right: 10px;
+  border: #022d36 solid;
+}
+

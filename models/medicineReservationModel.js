@@ -11,19 +11,13 @@ const medicineReservationSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    id: {
+      type: String,
+      required: true,
+    },
     quantity: {
       type: Number,
       required: true,
-    },
-    isApproved: {
-      type: Boolean,
-      default: false,
-    },
-    approvalDate: {
-      type: Date,
-    },
-    additionalInfo: {
-      type: String,
     },
   },
   { timestamps: true }

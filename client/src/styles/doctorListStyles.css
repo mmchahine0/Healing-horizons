@@ -12,6 +12,10 @@
 .doctor-list ul {
   list-style: none;
   padding: 0;
+  border: #022d36 solid;
+  border-bottom: none;
+  border-radius: 8px;
+
 }
 
 .doctor-list li {
@@ -32,7 +36,7 @@
 .doctor-list li button {
   padding: 8px 16px;
   font-size: 16px;
-  background-color: #3498db;
+  background-color: #022d36;;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -43,4 +47,3 @@
   background-color: #2980b9;
 }
 
-/* Additional styling for Navbar and Footer components can be added here */

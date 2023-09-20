@@ -1,0 +1,46 @@
+/* CSS for .formEmail class */
+
+.formEmail {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  border: #022d36 solid
+}
+
+.formEmail label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.formEmail input, .formEmail textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.formEmail button {
+  padding: 10px 20px;
+  background-color: #022d36;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.formEmail button:hover {
+  background-color: #0056b3;
+}
+
+/* Styles for the main container */
+.mainContainer {
+  margin: 20px;
+}
+
+.mainContainer h1 {
+  margin-bottom: 20px;
+}

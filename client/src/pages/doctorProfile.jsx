@@ -7,14 +7,16 @@ const DoctorProfile = () => {
   const { doctorIdString } = useParams();
 
   const appointmentRoute = `/appointment/${doctorIdString}`;
+  const emailSender = `/emailSend/${doctorIdString}`
+
 
   return (
     <>
       <Navbar />
       <DoctorProfileS userId={doctorIdString} />
-      <nav>
-        <Link to={appointmentRoute}>Make an appointment here</Link>
-        <Link to="/email">Send an email</Link>
+      <nav className="profile-a">
+        <Link to={appointmentRoute}>Make an Appointment</Link> <br/>
+        <Link to={emailSender}>Send an Email</Link>
       </nav>
       <Footer />
     </>

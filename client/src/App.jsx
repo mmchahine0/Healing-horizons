@@ -16,7 +16,6 @@ import Meds from './pages/meds';
 import PatientProfile from './pages/patientProfile';
 import Room from './pages/room';
 import ChattingAi from './pages/chattingAi';
-import Survey from './pages/survey';
 import AdminPage from './pages/adminPage';
 import NotFound from './pages/notFound';
 //components
@@ -45,7 +44,7 @@ function App() {
               element={<Signup />}
             />
             {/* protected */}
-            <Route element={<RequireAuth allowedRole={["user"]}/>}>
+            <Route element={<RequireAuth allowedRole={["user","doctor","admin"]}/>}>
               <Route
               path="/home"
               element={<Home />}
@@ -75,7 +74,7 @@ function App() {
               element={<DoctorProfile />}
               />
               <Route
-              path="/emailSend"
+              path="/emailSend/:doctorIdString"
               element={<EmailSend />}
               />
               <Route
@@ -94,11 +93,7 @@ function App() {
               path="/chatting"
               element={<ChattingAi />}
               />
-              {/* only once */}
-              <Route
-              path="/survey"
-              element={<Survey />}
-              />
+            
           </Route>
             {/* specified role to precced */}
           <Route element={<RequireAuth allowedRole={["doctor","admin"]}/>}>

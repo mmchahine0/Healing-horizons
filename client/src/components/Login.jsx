@@ -32,11 +32,15 @@ const Login = () => {
       const response = await axios.post('http://127.0.0.1:3500/auth/login', JSON.stringify({ email, password }), {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
+      }).catch(err => {
+        throw err;
       });
-
       const token = response?.data?.token;
       const role = response?.data?.role;
       const message = response?.data?.message;
+
+      localStorage.setItem("jwt", token);
+      localStorage.setItem("role", role);
 
       // Update auth context to include the token
       setAuth((prevAuth) => ({
@@ -46,8 +50,6 @@ const Login = () => {
       }));
         // const tokenWithBearer = `Bearer ${token}`;
 
-      // Set the token in a cookie named 'jwt'
-      Cookies.set('jwt', token, { expires: 7 });
 
       setSuccess(true);
       setWelcome(message);

@@ -14,7 +14,24 @@ body {
   max-width: 600px;
   border: #022d36 solid ;
 }
-
+.profile-p{
+  padding: 5px;
+}
+.profile-a {
+  background-color: #022d36;
+  border: white solid;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+  display: inline-block; 
+  margin-left: 55%;
+}
+.profile-a :hover{
+  color: #022d36;
+  background-color: white;
+  transition: 0.3s ease-in-out;
+}
 .profile-container h2 {
   margin-bottom: 20px;
 }

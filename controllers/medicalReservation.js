@@ -1,35 +1,50 @@
 const MedicineReservation = require('../models/medicineReservationModel');
+const User = require('../models/userModel')
+const Product = require('../models/MedSellingModels/productModel');
 
 exports.requestMedication = async (req, res) => {
   try {
-    const { medication, quantity, additionalInfo } = req.body;
+    const { medication, quantity } = req.body;
 
-    // Check if the requested quantity is available
-    const requestedMedication = await Medicine.findOne({ _id: medication });
-    if (!requestedMedication) {
-      return res.status(404).json({ message: 'Medication not found' });
+    const checkUser = await User.findById(req.user.id);
+
+    if (!checkUser) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    if (quantity > requestedMedication.quantity) {
-      return res.status(409).json({ message: 'Requested quantity is not available' });
+    const requestedMed = await Product.findById(medication);
+
+    if (!requestedMed) {
+      return res.status(404).json({ message: 'Medicine not found' });
     }
 
-    // Create a new medicine reservation
+
     const newReservation = new MedicineReservation({
-      user: req.user._id,
-      medication,
+      user: checkUser,
+      medication: requestedMed.productName,
+      id: medication,
       quantity,
-      additionalInfo,
     });
-
-    // Decrease the available quantity of the medication
-
-    requestedMedication.quantity -= quantity;
-    await requestedMedication.save();
 
     await newReservation.save();
 
-    res.status(200).json({ message: 'Medication request submitted' });
+    return res.status(200).json({ message: 'Medication request submitted' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Something went wrong' });
+  }
+};
+
+exports.getAllRequestsForDoctor = async (req, res) => {
+  try {
+
+    if (req.user.role !== 'doctor') {
+      return res.status(403).json({ message: 'Access denied. Only doctors can access this endpoint.' });
+    }
+
+    const requests = await MedicineReservation.find();
+
+    res.status(200).json({ requests });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Something went wrong' });

@@ -1,14 +1,28 @@
-import { Link } from "react-router-dom";
+import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import roomimg from '../images/room.png';
 import appointmentimg from '../images/appointment.png';
 import doctorimg from '../images/doctor.png';
 import medsimg from '../images/meds.png';
-
+import amindimg from '../images/admin.png';
 import "../styles/HomeStyles.css"
+import { useEffect, useState } from 'react';
 
 const Home = () => {
+  const [userRole, setUserRole] = useState('');
+  
+    useEffect(() => {
+      axios.get('http://127.0.0.1:3500/user/ownUser')
+        .then((response) => {
+          setUserRole(response.data.user.role);
+        })
+        .catch((error) => {
+          console.error('Error fetching user role:', error);
+        });
+    }, []);
+
+
   return (
     <>
     <Navbar />
@@ -35,7 +49,7 @@ const Home = () => {
           <p style={{ paddingTop: '5px', textAlign:"left" }}>Schedule medical appointments easily.</p>
           <p style={{ paddingTop: '5px', textAlign:"left" }}>Connect with trusted healthcare</p>
           <p style={{ paddingTop: '5px', textAlign:"left" }}>providers and prioritize your well-being.</p></div>
-          <button className="buttonHome">Make an Appointment</button>
+          <a href="/chooseSickness" className="buttonHome">Make an Appointment</a>
         </div>
       </div>
 
@@ -62,6 +76,20 @@ const Home = () => {
           <a href="/doctorList" className="buttonHome">Check out our Doctors</a>
         </div>
       </div>
+
+      {userRole == 'doctor' && (
+        <div className="fifthColumnHome">
+          <div className="image-container">
+            <img src={amindimg} alt="Hospital Image" />
+            <div className="column-textHome" style={{ borderRight: '3px solid #022d36' }}>
+              <p style={{ paddingTop: '5px' }}>Access your Doctor privileges here.</p>
+            </div>
+            <a href="/adminPage" className="buttonHome">
+              Press here
+            </a>
+          </div>
+        </div>
+      )}
 
       <div className="circleColumnHome">
   <div className="health-infoHome">

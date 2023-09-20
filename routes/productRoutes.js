@@ -23,7 +23,9 @@ router.delete(
 
 router.get(
   "/all-products",
+  authController.protect,
   productController.getAllProducts
 );
+
 
 module.exports = router;

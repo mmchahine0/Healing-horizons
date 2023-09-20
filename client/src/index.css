@@ -4,8 +4,8 @@
   box-sizing: border-box;
 }
 body {
-  background: linear-gradient(#ffffff,hsl(190, 25%, 25%));  
-}
-body {
   font-family: Arial, sans-serif;
+  margin:0;
+  padding:0;
+  background: linear-gradient(#ffffff,hsl(190, 25%, 25%));  
 }

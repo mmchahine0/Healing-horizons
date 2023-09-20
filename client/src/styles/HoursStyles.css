@@ -1,0 +1,41 @@
+
+.containerUpdate {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.labelUpdate {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.selectInputUpdate, .textInputUpdate {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.buttonUpdateUpdate {
+  background-color: #022d36;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.buttonUpdateUpdate:hover {
+  background-color: #0056b3;
+}
+
+

@@ -26,11 +26,36 @@
   color:#fff;
   transition: 0.3s ease-in-out;
 }
+
 #navbar li a:hover{
   color:#0492c2;
 }
 
 #navbar li a:hover::after{
+  content:"";
+  width: 30%;
+  height: 2px;
+  background-color:#0492c2 ;
+  position: absolute;
+  bottom: -4px;
+  left: 20px;
+}
+
+#navbar li button{
+  text-decoration:none;
+  font-size:1.2rem;
+  font-weight: 600;
+  color:#fff;
+  transition: 0.3s ease-in-out;
+  background: none;
+  border: none;
+}
+
+#navbar li button:hover{
+  color:#0492c2;
+}
+
+#navbar li button:hover::after{
   content:"";
   width: 30%;
   height: 2px;

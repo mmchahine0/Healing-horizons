@@ -1,6 +1,7 @@
-/* Your existing CSS */
 
 .section_padding {
+  border-top: white solid;
+  
   padding: 4rem 4rem;
 }
 .footer {

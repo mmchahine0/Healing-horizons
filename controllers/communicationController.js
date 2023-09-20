@@ -3,20 +3,23 @@ const sendMail = require('../utils/email').sendMail;
 
 exports.sendEmail = async (req, res) => {
   try {
-    const { receiverId, subject, message } = req.body;
+    const { receiver, subject, message } = req.body;
     const senderId = req.user._id;
 
 
     const sender = await User.findById(senderId);
-    const receiver = await User.findById(receiverId);
+    console.log(sender)
+    console.log(receiver)
 
     if (!sender || !receiver) {
       return res.status(404).json({ message: "Sender or receiver not found" });
     }
+    if (!subject || !message) return res.status(404).json({ message: "You can't send an email with empty credentials" });
 
-    // Prepare the email content
+
     const emailOptions = {
-      email: receiver.email,
+      from: sender.email,
+      email: receiver,
       subject: subject,
       message: message,
     };

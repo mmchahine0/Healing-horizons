@@ -11,7 +11,7 @@ exports.sendMail = async (options) => {
   })
 
   const mailOptions = {
-    from: "HealingHorizons <info@healinghorizons.com>",
+    from: options.from,
     to: options.email,
     subject: options.subject,
     test: options.message

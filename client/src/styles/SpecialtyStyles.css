@@ -1,0 +1,42 @@
+.specialty-buttons {
+  display: flex;
+  flex-wrap: wrap; 
+  justify-content: space-around;
+}
+
+.specialty-button {
+  width: 180px; 
+  height: 180px; 
+  margin: 10px; 
+  background-color: #022d36;
+  border: solid;
+  border-radius: 50%;
+  border-color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  color: white; 
+  font-size: 16px; 
+}
+.specialty-button:hover {
+  transition: 0.3s ease-in-out;
+  background-color: #2980b9;
+}
+
+.visit-button {
+  background-color: #022d36 ;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.visit-button:hover {
+  background-color: #1a5276;
+}
+
