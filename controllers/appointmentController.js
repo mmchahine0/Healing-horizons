@@ -84,7 +84,7 @@ exports.bookAppointment = async (req, res) => {
 
 exports.cancelAppointment = async (req, res) => {
   try {
-    const appointmentId = req.body.appointmentId;
+    const { appointmentId } = req.params;
     const patientId = req.user._id;
 
     const appointment = await Appointment.findById(appointmentId);
@@ -93,13 +93,6 @@ exports.cancelAppointment = async (req, res) => {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-
-    // Check if the patient is authorized to cancel the appointment
-    if (!appointment.user._id.equals(patientId)) {
-      return res.status(403).json({ message: "Unauthorized to cancel this appointment" });
-    }
-
-    // Remove the appointment
     await appointment.deleteOne();
 
     return res.status(200).json({ message: "Appointment cancelled successfully" });
@@ -131,5 +124,18 @@ exports.sendAppointmentReminder = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error sending appointment reminder email' });
+  }
+};
+
+exports.getAppointments = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const appointments = await Appointment.find({ user: userId });
+
+    return res.status(200).json({ data: appointments });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Something went wrong while fetching appointments." });
   }
 };

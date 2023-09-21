@@ -26,7 +26,7 @@ const Home = () => {
   return (
     <>
     <Navbar />
-
+    {userRole ==='user' &&(<>
     <div className="firstColumnHome">
       <div className="image-container">
         <img src={roomimg} alt="Hospital Image" />
@@ -76,8 +76,8 @@ const Home = () => {
           <a href="/doctorList" className="buttonHome">Check out our Doctors</a>
         </div>
       </div>
-
-      {userRole == 'doctor' && (
+      </>)}
+      {(userRole === 'doctor' || userRole === 'admin')  && (
         <div className="fifthColumnHome">
           <div className="image-container">
             <img src={amindimg} alt="Hospital Image" />
@@ -90,7 +90,7 @@ const Home = () => {
           </div>
         </div>
       )}
-
+    
       <div className="circleColumnHome">
   <div className="health-infoHome">
     <div className="info-itemHome">

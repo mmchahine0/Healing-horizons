@@ -4,7 +4,120 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import "../styles/HoursStyles.css"
+import "../styles/HoursStyles.css";
+
+
+const BioUpdateForm = () => {
+
+  const [bio, setBio] = useState("");  
+
+  const handleBioChange = (event) => {
+    setBio(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      await axios.post(
+        `http://127.0.0.1:3500/doctor/update-bio`,
+        { bio }
+      );
+      toast.success('Bio updated successfully');
+    } catch (error) {
+      console.error("Error updating bio: ", error);
+      toast.error('Error updating bio');
+    }
+  };
+
+  return (
+    <div className="containerUpdate" >
+      <h2 className="labelUpdate">Update Bio</h2>
+      <form onSubmit={handleSubmit}>
+        <label className="labelUpdate">
+          Bio:
+          <textarea
+            className="textInputUpdate"
+            value={bio}
+            onChange={handleBioChange}
+            placeholder="Enter your bio"
+            rows={5}
+            cols={50}
+          />
+        </label>
+        <br />
+        <button type="submit">Update Bio</button>
+      </form>
+      <ToastContainer/>
+    </div>
+  );
+};
+
+const SpecialtyUpdateForm = () => {
+
+  const [selectedSpecialty, setSelectedSpecialty] = useState("");
+
+  const specialties = [
+    'Cardiology',
+    'Dermatology',
+    'Endocrinology',
+    'Gastroenterology',
+    'Neurology',
+    'Oncology',
+    'Orthopedics',
+    'Pediatrics',
+    'Psychiatry',
+    'Urology',
+  ];
+
+  const handleSpecialtyChange = (event) => {
+    setSelectedSpecialty(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!selectedSpecialty) {
+      toast.error('Please select a specialty.');
+      return;
+    }
+
+    try {
+      await axios.post(
+        `http://127.0.0.1:3500/doctor/specialty`,
+        { specialty: selectedSpecialty },
+      );
+    toast.success('Bio updated successfully');
+
+    } catch (error) {
+      console.error("Error updating specialty: ", error);
+      toast.error('Error updating specialty');
+
+    }
+  };
+
+  return (
+    <div className="containerUpdate">
+      <h2 className="labelUpdate">Choose Specialty</h2>
+      <form onSubmit={handleSubmit}>
+        <label className="labelUpdate">
+          Select Specialty:
+          <select value={selectedSpecialty} onChange={handleSpecialtyChange}>
+            <option value="">Select a specialty</option>
+            {specialties.map((specialty, index) => (
+              <option key={index} value={specialty}>
+                {specialty}
+              </option>
+            ))}
+          </select>
+        </label>
+        <br />
+        <button type="submit">Update Specialty</button>
+      </form>
+      <ToastContainer/>
+    </div>
+  );
+};
 
 const UpdateOfficeHours = () => {
   const [newOfficeHours, setNewOfficeHours] = useState([
@@ -40,6 +153,8 @@ const UpdateOfficeHours = () => {
 
   return (
     <div className="containerUpdate" style={{borderBottom:"black solid"}}>
+      <h2 className="labelUpdate">Update Office hours</h2>
+
       {[...Array(5)].map((_, index) => (
         <div key={index}>
           <label className="labelUpdate">
@@ -104,6 +219,8 @@ const CreateOrUpdateMedicalRecord = () => {
 
   return (
     <div className="containerUpdate">
+      <h2 className="labelUpdate">Create/Update Medical Record</h2>
+
       <div className="inputGroup">
         <label className="labelUpdate" htmlFor="patientId">Patient ID:</label>
         <input
@@ -186,6 +303,8 @@ const UpdateOrderStatus = () => {
   };
   return (
     <div className="containerUpdate">
+      <h2 className="labelUpdate">Update an order status</h2>
+
       <div className="inputGroup">
         <label className="labelUpdate" htmlFor="orderId">Order ID:</label>
         <input
@@ -248,6 +367,18 @@ const GetAllRequestsForDoctor = () => {
 const MakeDoctorRequest = () => {
   const [userId, setUserId] = useState('');
 
+  const [userRole, setUserRole] = useState('');
+  
+    useEffect(() => {
+      axios.get('http://127.0.0.1:3500/user/ownUser')
+        .then((response) => {
+          setUserRole(response.data.user.role);
+        })
+        .catch((error) => {
+          console.error('Error fetching user role:', error);
+        });
+    }, []);
+
   const handleUserIdChange = (e) => {
     setUserId(e.target.value);
   };
@@ -256,9 +387,8 @@ const MakeDoctorRequest = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://127.0.0.1:3500/auth/make-doctor', { userId });
+      await axios.post('http://127.0.0.1:3500/auth/make-doctor', { userId });
       toast.success('User\'s role updated to doctor');
-
     } catch (error) {
       console.error('Error updating user\'s role:', error);
       toast.error('Error updating user\'s role');
@@ -267,31 +397,39 @@ const MakeDoctorRequest = () => {
   };
 
   return (
-    <div className="containerUpdate">
-      <h2 className="labelUpdate">Make User a Doctor</h2>
-      <form onSubmit={handleSubmit}>
-        <label className="labelUpdate">
-          User ID:
-          <input
-            className="textInputUpdate"
-            type="text"
-            value={userId}
-            onChange={handleUserIdChange}
-            placeholder="Enter User ID"
-          />
-        </label>
-        <button className="buttonUpdateUpdate" type="submit">Make Doctor</button>
-      </form>
-      <ToastContainer />
-    </div>
+    <>
+    {userRole === 'admin' && (
+      <div className="containerUpdate">
+        <h2 className="labelUpdate">Make User a Doctor</h2>
+        <form onSubmit={handleSubmit}>
+          <label className="labelUpdate">
+            User ID:
+            <input
+              className="textInputUpdate"
+              type="text"
+              value={userId}
+              onChange={handleUserIdChange}
+              placeholder="Enter User ID"
+            />
+          </label>
+          <button className="buttonUpdateUpdate" type="submit">Make Doctor</button>
+        </form>
+        <ToastContainer />
+      </div>
+    )}
+  </>
   );
 };
-
 
 const AdminPage = () => {
   return (
     <>
     <Navbar/>
+
+    <SpecialtyUpdateForm/>
+
+    <BioUpdateForm/>
+
     <UpdateOfficeHours/>
 
     <CreateOrUpdateMedicalRecord/>
@@ -301,6 +439,11 @@ const AdminPage = () => {
     <GetAllRequestsForDoctor/>
 
     <MakeDoctorRequest/>
+
+    <div className="containerUpdate">
+    <h2 style={{padding:"10px"}} className="labelUpdate">Check all users</h2>
+    <a className="buttonUpdateUpdate" href="/usersList">go to all Users</a>
+    </div>
     <Footer/>
     </>
   );

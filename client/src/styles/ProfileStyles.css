@@ -52,11 +52,12 @@ body {
 .profile-container button {
   padding: 10px 20px;
   font-size: 14px;
-  background-color: #007BFF;
+  background-color: #022d36;
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  margin: 5px;
 }
 
 .profile-container button:hover {

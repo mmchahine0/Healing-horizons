@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema(
 
     specialty: {
       type: String,
-      enum: ["Cardiology", "Dermatology", "Endocrinology", "Gastroenterology", "Neurology", "Oncology", "Orthopedics", "Pediatrics", "Psychiatry", "Urology", "Other"]
+      enum: ["Cardiology", "Dermatology", "Endocrinology", "Gastroenterology", "Neurology", "Oncology", "Orthopedics", "Pediatrics", "Psychiatry", "Urology"]
     },
     image: {
       type: String,

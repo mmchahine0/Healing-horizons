@@ -17,7 +17,9 @@ import PatientProfile from './pages/patientProfile';
 import Room from './pages/room';
 import ChattingAi from './pages/chattingAi';
 import AdminPage from './pages/adminPage';
+import AllUsers from './pages/AllUsers'
 import NotFound from './pages/notFound';
+import AllAppointment from './pages/AllAppointments';
 //components
 import Layout from './components/Layout';
 import { AuthProvider } from './context/AuthProvider';
@@ -82,7 +84,7 @@ function App() {
               element={<Meds />}
               />
               <Route
-              path="/patientProfile"
+              path="/patientProfile/:userId"
               element={<PatientProfile />}
                 />
                 <Route
@@ -93,7 +95,10 @@ function App() {
               path="/chatting"
               element={<ChattingAi />}
               />
-            
+              <Route
+              path="/appointments/:userId"
+              element={<AllAppointment />}
+              />
           </Route>
             {/* specified role to precced */}
           <Route element={<RequireAuth allowedRole={["doctor","admin"]}/>}>
@@ -101,6 +106,10 @@ function App() {
             <Route
               path="/adminPage"
               element={<AdminPage/>}
+            />
+            <Route
+              path="/usersList"
+              element={<AllUsers/>}
             />
           </Route>
             </Route>

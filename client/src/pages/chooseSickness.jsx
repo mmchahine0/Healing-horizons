@@ -20,7 +20,6 @@ const ChooseSickness = () => {
     'Pediatrics',
     'Psychiatry',
     'Urology',
-    'Other',
   ];
 
   const handleSpecialtyClick = (specialty) => {

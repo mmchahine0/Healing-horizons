@@ -1,0 +1,19 @@
+#appointments-container {
+  margin: 20px;
+}
+
+#appointments-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.appointment-item {
+  border: 1px solid #022d36;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.appointment-item .datetime {
+  font-weight: bold;
+  margin-bottom: 5px;
+}

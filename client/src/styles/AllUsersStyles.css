@@ -1,0 +1,33 @@
+.containerUser {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.h2User {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.textInputUser {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.ulUser {
+  list-style: none;
+  padding: 0;
+}
+
+.liUser {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #022d36;
+  margin: 10px;
+}
+
+.liUser:hover {
+  background-color: #f0f0f0;
+}

@@ -6,7 +6,7 @@ exports.submitSurvey = async (req, res) => {
     const { allergies, medicalHistory, criticalConditions, dateofbirth } = req.body;
 
     const user = await User.findById(req.user._id);
-    let userSurvey = await Survey.findOne({ user: req.user._id });
+    const userSurvey = await Survey.findOne({ user: user });
 
     if (userSurvey) {
       userSurvey.allergies = allergies;

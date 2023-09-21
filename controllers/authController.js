@@ -224,10 +224,20 @@ exports.protect = async (req, res, next) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const doctor = await User.findById(req.user._id)
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+    if (doctor.role !== "doctor" && doctor.role !== "admin") {
+      return res.status(403).json({ message: "You're not authorized" });
+    }
+
+    const users = await User.find({ role: "user" });
+
     if (users.length == 0) {
       return res.status(404).json({ message: "No users found" });
     }
+
     return res.status(200).json({ users });
   } catch (err) {
     console.log(err)

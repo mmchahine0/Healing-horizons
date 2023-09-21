@@ -24,8 +24,10 @@ const UserRoutes = require('./routes/UserRoutes');
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
-
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));
 mongoose.set("strictQuery", true);
 mongoose
   .connect(process.env.MONGO_URL)
@@ -34,6 +36,7 @@ mongoose
     console.log(err);
     process.exit(1);
   });
+
 
 app.use("/auth", authRouter);
 app.use("/cart", cartRoutes);
