@@ -1,0 +1,55 @@
+.room-reservation-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #022d36;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.room-reservation-form-group {
+  margin-bottom: 10px;
+}
+
+.room-reservation-label {
+  display: block;
+  font-weight: bold;
+}
+
+.room-reservation-input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.room-reservation-button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.room-reservation-button:hover {
+  background-color: #45a049;
+}
+
+.page-container-reservation {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-container-reservation h1 {
+  text-align: center;
+}
+
+.page-container-reservation .divider {
+  margin-top: 20px;
+  border-top: 1px solid #ccc;
+}
+

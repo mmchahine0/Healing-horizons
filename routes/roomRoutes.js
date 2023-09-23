@@ -4,5 +4,6 @@ const roomController = require('../controllers/roomController'); // Replace with
 const authController = require('../controllers/authController');
 
 router.post('/create', authController.protect, roomController.createRoom);
+router.get('/get/:roomId', authController.protect, roomController.getRoom)
 
 module.exports = router;

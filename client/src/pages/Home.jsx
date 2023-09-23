@@ -8,10 +8,11 @@ import medsimg from '../images/meds.png';
 import amindimg from '../images/admin.png';
 import "../styles/HomeStyles.css"
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [userRole, setUserRole] = useState('');
-  
+  const navigate = useNavigate();
     useEffect(() => {
       axios.get('http://127.0.0.1:3500/user/ownUser')
         .then((response) => {
@@ -21,8 +22,13 @@ const Home = () => {
           console.error('Error fetching user role:', error);
         });
     }, []);
+  
+  const handleClick = (string) =>{
+    navigate(string)
+  }
 
-
+  
+    
   return (
     <>
     <Navbar />
@@ -36,7 +42,7 @@ const Home = () => {
           <p style={{ paddingTop: '5px' }}>Book a cozy room with modern amenities.</p>
           <p style={{ paddingTop: '5px' }}> Unwind and make memories</p>
           <p style={{ paddingTop: '5px' }}>in our welcoming accommodations.</p></div>
-          <button className="buttonHome">Reserve a Room</button>
+          <button onClick={() => handleClick("/roomBooking")} className="buttonHome">Reserve a Room</button>
 
       </div>
     </div>
@@ -49,7 +55,8 @@ const Home = () => {
           <p style={{ paddingTop: '5px', textAlign:"left" }}>Schedule medical appointments easily.</p>
           <p style={{ paddingTop: '5px', textAlign:"left" }}>Connect with trusted healthcare</p>
           <p style={{ paddingTop: '5px', textAlign:"left" }}>providers and prioritize your well-being.</p></div>
-          <a href="/chooseSickness" className="buttonHome">Make an Appointment</a>
+          <button onClick={() => handleClick("/chooseSickness")} className="buttonHome">Make an Appointment</button>
+
         </div>
       </div>
 
@@ -61,7 +68,8 @@ const Home = () => {
           <p style={{ paddingTop: '5px' }}> Order conveniently and have</p>
           <p style={{ paddingTop: '5px' }}>your essentials delivered to your door.</p>
           </div>
-          <a href="/meds" className="buttonHome">We do sell Medicine</a>
+          <button onClick={() => handleClick("/meds")} className="buttonHome">We do sell Medicine</button>
+
         </div>
       </div>
 
@@ -73,7 +81,8 @@ const Home = () => {
           <p style={{ paddingTop: '5px', textAlign:"left" }}>Discover expertise and book appointments</p>
           <p style={{ paddingTop: '5px', textAlign:"left" }}> with trusted healthcare professionals tailored to your needs.</p>
           </div>
-          <a href="/doctorList" className="buttonHome">Check out our Doctors</a>
+          <button onClick={() => handleClick("/doctorList")} className="buttonHome">Check out our Doctors</button>
+
         </div>
       </div>
       </>)}
@@ -84,9 +93,9 @@ const Home = () => {
             <div className="column-textHome" style={{ borderRight: '3px solid #022d36' }}>
               <p style={{ paddingTop: '5px' }}>Access your Doctor privileges here.</p>
             </div>
-            <a href="/adminPage" className="buttonHome">
-              Press here
-            </a>
+        
+            <button onClick={() => handleClick("/adminPage")} className="buttonHome">Press here</button>
+
           </div>
         </div>
       )}

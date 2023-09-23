@@ -7,15 +7,13 @@ const roomSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    // roomType: {
-    //   type: String,
-    //   required: true,
-    // },
+
     status: {
       type: String,
       enum: ['available', 'occupied'],
       default: 'available',
     },
+
     floorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Floor',

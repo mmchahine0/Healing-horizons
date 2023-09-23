@@ -53,15 +53,21 @@ exports.createFloor = async (req, res) => {
 
 exports.getFloorData = async (req, res) => {
   try {
-    const { floorId } = req.params;
+    const checkUser = await checkDoctor(req);
 
-    const floor = await floor.findById(floorId)
+    if (checkUser == false) {
+      return res.status(401).json({ message: "User cannot insert an item" })
+    }
 
-    if (!floor) {
+    const { floorNumber } = req.params;
+
+    const selectedFloor = await floor.findOne({ floorNumber });
+
+    if (!selectedFloor) {
       return res.status(404).json({ message: 'Floor not found' });
     }
 
-    res.status(200).json({ message: 'Floor data retrieved successfully', floor: floor });
+    res.status(200).json({ message: 'Floor data retrieved successfully', selectedFloor });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Something went wrong' });

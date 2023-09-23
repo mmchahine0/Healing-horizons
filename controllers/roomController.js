@@ -4,7 +4,7 @@ const floor = require('../models/floorModel');
 
 const checkDoctor = async (req) => {
   try {
-    const checkUser = await User.findById(req.user._id)//or_id:req.user._id//https://www.youtube.com/watch?v=yVi4RUL-rpE&t=2s ***/4:00
+    const checkUser = await User.findById(req.user._id)
     if (!checkUser) {
       console.log("User not found")
       return false;
@@ -58,6 +58,30 @@ exports.createRoom = async (req, res) => {
     await foundFloor.save();
 
     res.status(201).json({ message: 'Room created successfully', room: newRoom });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+};
+
+exports.getRoom = async (req, res) => {
+  try {
+
+    const checkUser = await checkDoctor(req);
+
+    if (checkUser == false) {
+      return res.status(401).json({ message: "User cannot insert an item" })
+    }
+
+    const { roomId } = req.params;
+
+    const selectedRoom = await room.findById(roomId)
+
+    if (!selectedRoom) {
+      return res.status(404).json({ message: 'Room not found' });
+    }
+
+    res.status(200).json({ message: 'Room data retrieved successfully', selectedRoom });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Something went wrong' });

@@ -5,13 +5,49 @@ const moment = require('moment');
 const room = require('../models/roomModel');
 const mongoose = require('mongoose');
 
+const calculateRoomReservationPrice = (checkInDate, checkOutDate) => {
+  try {
+    // You can implement your pricing logic here based on the check-in and check-out dates
+    // For simplicity, let's assume a fixed price per day
+    const dailyPrice = 100; // Adjust this based on your actual pricing logic
+    const numberOfDays = moment(checkOutDate).diff(moment(checkInDate), 'days');
+    const totalPrice = dailyPrice * numberOfDays;
+    return totalPrice;
+  } catch (error) {
+    console.error('Error calculating room reservation price:', error);
+    throw error;
+  }
+};
+
+const AvailableRooms = async (checkInDate, checkOutDate) => {
+  try {
+    const count = await room.countDocuments({
+      status: 'available',
+      $or: [
+        {
+          $and: [{ checkInDate: { $gte: checkInDate } }, { checkInDate: { $lt: checkOutDate } }]
+        },
+        {
+          $and: [{ checkOutDate: { $gt: checkInDate } }, { checkOutDate: { $lte: checkOutDate } }]
+        }
+      ]
+    });
+    return count;
+  } catch (error) {
+    console.error('Error counting available rooms:', error);
+    throw error;
+  }
+};
+
+
 exports.reserveRoom = async (req, res) => {
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
 
-    const { roomId, checkInDate, checkOutDate } = req.body;
+    const { checkInDate, checkOutDate } = req.body;
+    const { roomId } = req.params;
 
     // Check if the requested room exists
     const roomCheck = await room.findById(roomId);
@@ -19,7 +55,7 @@ exports.reserveRoom = async (req, res) => {
     if (!roomCheck) return res.status(404).json({ message: "room not found" });
 
     // Check if the room is already occupied
-    if (roomCheck.status == "occupied") return res.status(404).json({ message: "room occupied" });
+    if (roomCheck.status === "occupied") return res.status(404).json({ message: "room occupied" });
 
     // Format the check-in and check-out dates
     const formattedCheckInDate = moment(checkInDate).format('YYYY-MM-DDTHH:mm');
@@ -30,26 +66,10 @@ exports.reserveRoom = async (req, res) => {
       return res.status(400).json({ message: "Invalid reservation date format" });
     }
 
-    const cartOwner = req.user._id;
-    // Find the user's cart and create one if it doesn't exist
-    let cart = await Cart.findOne({ cartOwner }).session(session);
-
-    if (!cart) {
-      cart = await Cart.create(
-        [
-          {
-            cartOwner: cartOwner,
-            totalPrice: 0,
-          },
-        ],
-        { session: session }
-      )[0];
-    }
-
     // Check if there are available rooms for the requested dates
-    const availableRooms = await getAvailableRooms(checkInDate, checkOutDate).session(session);
+    const availableRoomsCount = await AvailableRooms(checkInDate, checkOutDate);
 
-    if (availableRooms <= 0) {
+    if (availableRoomsCount <= 0) {
       return res.status(409).json({ message: "Sorry, no rooms are available for the selected dates" });
     }
 
@@ -63,7 +83,7 @@ exports.reserveRoom = async (req, res) => {
 
     // Create a new room reservation
     const newReservation = new RoomReservation({
-      user: cartOwner,
+      user: req.user._id, // Assuming req.user._id is the user's ID
       roomId,
       checkInDate,
       checkOutDate,
@@ -71,15 +91,12 @@ exports.reserveRoom = async (req, res) => {
       status: 'pending',
     });
 
-    // Update the cart's total price and mark the room as occupied
-    cart.totalPrice += roomReservationPrice;
+    // Update the room status to 'occupied'
     roomCheck.status = "occupied";
 
-    // Save the new reservation, update the cart, and decrease available room count
+    // Save the new reservation and update the room status
     await newReservation.save({ session: session });
     await roomCheck.save({ session: session });
-    cart.roomReservation.push(newReservation._id);
-    await cart.save({ session: session });
 
     const floor = await Floor.findOne({ rooms: roomId }).session(session);
 
@@ -91,7 +108,7 @@ exports.reserveRoom = async (req, res) => {
 
     // Commit the transaction and send a success message
     await session.commitTransaction();
-    res.status(200).json({ message: 'Room reservation added to cart. Please complete your payment to confirm the reservation.' });
+    res.status(200).json({ message: 'Room reservation successful. Please complete your payment to confirm the reservation.' });
   } catch (error) {
     console.error(error);
     // Rollback the transaction in case of an error and send an error message
@@ -102,6 +119,8 @@ exports.reserveRoom = async (req, res) => {
     session.endSession();
   }
 };
+
+
 exports.getRoomReservations = async (req, res) => {
   try {
     const rooms = await RoomReservation.find();
@@ -111,5 +130,15 @@ exports.getRoomReservations = async (req, res) => {
     return res.status(200).json({ message: "room reservations", data: rooms });
   } catch (err) {
     console.log(err)
+  }
+}
+
+exports.getAvailableRooms = async (req, res) => {
+  try {
+    const availableRooms = await room.find({ status: "available" });
+    return res.status(200).json({ message: "Available rooms", data: availableRooms });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Something went wrong' });
   }
 }

@@ -37,9 +37,9 @@ cron.schedule('0 9 * * *', async () => {//run at 9 Am everyday
 
 const updateCheckedOutRooms = async () => {
   try {
-    const currentDate = moment(); // Use moment for the current date and time
+    const currentDate = moment();
     const checkedOutReservations = await RoomReservation.find({
-      checkOutDate: { $lte: currentDate.toDate() }, // Convert moment to JavaScript Date
+      checkOutDate: { $lte: currentDate.toDate() },
       status: 'reserved'
     });
 

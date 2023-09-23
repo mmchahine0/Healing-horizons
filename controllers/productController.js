@@ -9,8 +9,6 @@ const checkDoctor = async (req) => {
       return false;
     }
 
-    console.log("User role:", checkUser.role);
-
     if (checkUser.role !== "doctor" && checkUser.role !== "admin") {
       console.log("User not authorized to perform the action");
       return false;
@@ -80,7 +78,7 @@ exports.deleteProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();//may add{}
+    const products = await Product.find();
     if (products.length <= 0) {
       return res.status(404).json({ message: "No products are available at the moment" })
     }

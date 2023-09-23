@@ -9,7 +9,7 @@ router.post(
   productController.createProduct
 );
 
-router.patch(
+router.post(
   "/update-product/:productID",
   authController.protect,
   productController.updateProduct

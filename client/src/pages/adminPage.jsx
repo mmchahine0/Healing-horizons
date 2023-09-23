@@ -6,10 +6,71 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../styles/HoursStyles.css";
 
+const DoctorProfileImageUpload = () => {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
+
+  const handleImageChange = (event) => {
+    setSelectedImage(event.target.files[0]);
+  };
+
+  const handleImageUpload = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('image', selectedImage);
+
+      const response = await axios.post(`http://127.0.0.1:3500/util/uploadProfileimg/${userRole}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      console.log('Profile image uploaded successfully:', response.data.imageUrl);
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+    }
+  };
+
+  return (
+    <>{userRole === 'doctor' && (
+    <div className="containerUpdate">
+      <h2> Upload your Profile picture</h2>
+      <div style={{padding:"5px",margin:"10px"}}>
+        <input style={{padding:"5px",margin:"10px"}} type="file" accept="image/*" onChange={handleImageChange} />
+        <button style={{padding:"5px",margin:"10px"}} onClick={handleImageUpload}>Upload Profile Image</button>
+      </div>
+    </div>
+    )}
+    </>
+  );
+};
 
 const BioUpdateForm = () => {
 
   const [bio, setBio] = useState("");  
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
 
   const handleBioChange = (event) => {
     setBio(event.target.value);
@@ -31,6 +92,7 @@ const BioUpdateForm = () => {
   };
 
   return (
+    <>{userRole === 'doctor' && (
     <div className="containerUpdate" >
       <h2 className="labelUpdate">Update Bio</h2>
       <form onSubmit={handleSubmit}>
@@ -50,12 +112,25 @@ const BioUpdateForm = () => {
       </form>
       <ToastContainer/>
     </div>
+    )}</>
   );
 };
 
 const SpecialtyUpdateForm = () => {
 
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
 
   const specialties = [
     'Cardiology',
@@ -97,6 +172,8 @@ const SpecialtyUpdateForm = () => {
   };
 
   return (
+    <>{userRole === 'doctor' && (
+
     <div className="containerUpdate">
       <h2 className="labelUpdate">Choose Specialty</h2>
       <form onSubmit={handleSubmit}>
@@ -116,6 +193,7 @@ const SpecialtyUpdateForm = () => {
       </form>
       <ToastContainer/>
     </div>
+    )}</>
   );
 };
 
@@ -127,6 +205,18 @@ const UpdateOfficeHours = () => {
     { day: '', startTime: '', endTime: '' },
     { day: '', startTime: '', endTime: '' }
   ]);
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
 
   const handleUpdateOfficeHours = () => {
     axios
@@ -152,6 +242,8 @@ const UpdateOfficeHours = () => {
   };
 
   return (
+    <>{userRole === 'doctor' && (
+
     <div className="containerUpdate" style={{borderBottom:"black solid"}}>
       <h2 className="labelUpdate">Update Office hours</h2>
 
@@ -183,6 +275,7 @@ const UpdateOfficeHours = () => {
       <button className="buttonUpdateUpdate" onClick={handleUpdateOfficeHours}>Update Office Hours</button>
       <ToastContainer className="Toastify__toast-containerUpdate" />
     </div>
+    )}</>
   );
 };
 
@@ -194,6 +287,18 @@ const CreateOrUpdateMedicalRecord = () => {
   const [labReports, setLabReports] = useState('');
   const [prescriptions, setPrescriptions] = useState('');
   const [additionalNotes, setAdditionalNotes] = useState('');
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
 
   const handleCreateOrUpdateMedicalRecord = () => {
     axios
@@ -218,6 +323,8 @@ const CreateOrUpdateMedicalRecord = () => {
   };
 
   return (
+    <>{userRole === 'doctor' && (
+
     <div className="containerUpdate">
       <h2 className="labelUpdate">Create/Update Medical Record</h2>
 
@@ -282,12 +389,14 @@ const CreateOrUpdateMedicalRecord = () => {
       <ToastContainer />
 
     </div>
+    )}</>
   );
 };
 
 
 const UpdateOrderStatus = () => {
   const [orderId, setOrderId] = useState('');
+  
 
   const handleUpdateOrderStatus = () => {
     axios
@@ -398,7 +507,7 @@ const MakeDoctorRequest = () => {
 
   return (
     <>
-    {userRole === 'admin' && (
+    {userRole === 'doctor' && (
       <div className="containerUpdate">
         <h2 className="labelUpdate">Make User a Doctor</h2>
         <form onSubmit={handleSubmit}>
@@ -421,10 +530,585 @@ const MakeDoctorRequest = () => {
   );
 };
 
+const CreateRoomForm = () => {
+  const [roomNumber, setRoomNumber] = useState('');
+  const [floorId, setFloorId] = useState('');
+  const [userRole, setUserRole] = useState('');
+  
+  useEffect(() => {
+    axios.get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
+
+  const handleRoomNumberChange = (e) => {
+    setRoomNumber(e.target.value);
+  };
+
+  const handleFloorIdChange = (e) => {
+    setFloorId(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://127.0.0.1:3500/room/create', {
+        roomNumber,
+        floorId,
+      });
+
+      console.log('Room created successfully:', response.data);
+      toast.success('Room created successfully');
+
+    } catch (error) {
+      console.error('Error creating room:', error);
+      toast.error('Error creating room');
+    }
+  };
+
+  return (
+    <>
+    {userRole === 'doctor' && (
+    <div className="containerUpdate">
+      <h2 className="labelUpdate">Create a Room</h2>
+      <form onSubmit={handleSubmit}>
+        <label className="labelUpdate">
+          Room Number:
+          <input type="text" value={roomNumber} onChange={handleRoomNumberChange} />
+        </label>
+        <br />
+        <label className="labelUpdate">
+          Floor ID:
+          <input type="text" value={floorId} onChange={handleFloorIdChange} />
+        </label>
+        <br />
+        <button className="buttonUpdateUpdate" type="submit">Create Room</button>
+      </form>
+      <ToastContainer/>
+    </div>
+    )}
+    </>
+  );
+};
+
+const CreateFloorForm = () => {
+  const [floorNumber, setFloorNumber] = useState('');
+  const [userRole, setUserRole] = useState('');
+  
+    useEffect(() => {
+      axios.get('http://127.0.0.1:3500/user/ownUser')
+        .then((response) => {
+          setUserRole(response.data.user.role);
+        })
+        .catch((error) => {
+          console.error('Error fetching user role:', error);
+        });
+    }, []);
+
+  const handleFloorNumberChange = (e) => {
+    setFloorNumber(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://127.0.0.1:3500/floor/create', {
+        floorNumber,
+      });
+
+      console.log('Floor created successfully:', response.data);
+      toast.success('Floor created successfully');
+    } catch (error) {
+      console.error('Error creating floor:', error);
+      toast.error('Error creating floor');
+
+    }
+  };
+
+  return (
+    <>
+    {userRole === 'doctor' && (
+    <div className="containerUpdate">
+      <h2>Create a Floor</h2>
+      <form onSubmit={handleSubmit}>
+        <label className="labelUpdate">
+          Floor Number:
+          <input type="text" value={floorNumber} onChange={handleFloorNumberChange} />
+        </label>
+        <br />
+        <button className="buttonUpdateUpdate" type="submit">Create Floor</button>
+      </form>
+      <ToastContainer/>
+    </div>
+    )}
+    </>
+  );
+};
+
+const FloorDetails = () => {
+  const [floorNumber, setFloorNumber] = useState('');
+  const [floorData, setFloorData] = useState(null);
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
+
+  const handleFloorNumberChange = (e) => {
+    setFloorNumber(e.target.value);
+  };
+
+  const handleGetFloorData = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.get(`http://127.0.0.1:3500/floor/get/${floorNumber}`);
+
+      setFloorData(response.data.selectedFloor);
+      console.log(response.data.selectedFloor);
+    } catch (error) {
+      console.error('Error getting floor data:', error);
+      toast.error('Error getting floor data');
+    }
+  };
+
+  return (
+    <>
+      {userRole === 'doctor' && (
+        <div className="containerUpdate">
+          <h2 className="labelUpdate">Get Floor Data</h2>
+          <form onSubmit={handleGetFloorData}>
+            <label className="labelUpdate">
+              Floor Number:
+              <input type="text" value={floorNumber} onChange={handleFloorNumberChange} />
+            </label>
+            <br />
+            <button className="buttonUpdateUpdate" type="submit">
+              Get Floor Data
+            </button>
+          </form>
+
+          {floorData && (
+            <div>
+              <h3 className="labelUpdate">Floor Data:</h3>
+              <pre className="labelUpdate">{JSON.stringify(floorData, null, 2)}</pre>
+            </div>
+          )}
+          <ToastContainer />
+        </div>
+      )}
+    </>
+  );
+};
+
+
+const RoomDetails = () => {
+  const [roomId, setRoomId] = useState('');
+  const [roomData, setRoomData] = useState(null);
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
+
+  const handleRoomIdChange = (e) => {
+    setRoomId(e.target.value);
+  };
+
+  const handleGetRoomData = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.get(`http://127.0.0.1:3500/room/get/${roomId}`);
+
+      setRoomData(response.data.selectedRoom);
+      console.log(response.data.selectedRoom);
+    } catch (error) {
+      console.error('Error getting room data:', error);
+      toast.error('Error getting room data');
+    }
+  };
+
+  return (
+    <>
+      {userRole === 'doctor' && (
+        <div className="containerUpdate">
+          <h2 className="labelUpdate">Get Room Data</h2>
+          <form onSubmit={handleGetRoomData}>
+            <label className="labelUpdate">
+              Room ID:
+              <input type="text" value={roomId} onChange={handleRoomIdChange} />
+            </label>
+            <br />
+            <button className="buttonUpdateUpdate" type="submit">
+              Get Room Data
+            </button>
+          </form>
+
+          {roomData && (
+            <div>
+              <h3 className="labelUpdate">Room Data:</h3>
+              <pre className="labelUpdate">{JSON.stringify(roomData, null, 2)}</pre>
+            </div>
+          )}
+          <ToastContainer />
+        </div>
+      )}
+    </>
+  );
+};
+
+const RoomReservations = () => {
+  const [roomReservations, setRoomReservations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
+
+  const handleGetRoomReservations = async () => {
+    setLoading(true);
+
+    try {
+      const response = await axios.get('http://127.0.0.1:3500/room-reservation/get');
+      setRoomReservations(response.data.data);
+    } catch (error) {
+      console.error('Error getting room reservations:', error);
+      toast.error('Error getting room reservations');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+    {userRole === 'doctor' && (
+
+    <div className="containerUpdate">
+      <h2 className="labelUpdate">Room Reservations</h2>
+      <button
+        className="buttonUpdateUpdate"
+        onClick={handleGetRoomReservations}
+        disabled={loading}
+      >
+        {loading ? 'Room Reservations: ' : 'Get Room Reservations'}
+      </button>
+
+      {roomReservations.length > 0 && (
+        <ul>
+          {roomReservations.map((reservation) => (
+            <li key={reservation._id}>{JSON.stringify(reservation)}</li>
+          ))}
+        </ul>
+      )}
+
+      <ToastContainer />
+    </div>
+    )}
+    </>
+  );
+};
+
+const ProductForm = () => {
+  const [productName, setProductName] = useState('');
+  const [productDescription, setProductDescription] = useState('');
+  const [productPrice, setProductPrice] = useState('');
+  const [productQuantity, setProductQuantity] = useState('');
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://127.0.0.1:3500/products/create-product', {
+        productName,
+        productDescription,
+        productPrice,
+        productQuantity,
+      });
+      console.log('Product created:', response.data);
+      toast.success('Product created successfully!');
+    } catch (error) {
+      console.error('Error creating product:', error);
+      toast.error('Error creating product');
+    }
+  };
+
+  return (
+    <>
+    {userRole === 'doctor' && (
+
+    <form className="containerUpdate" onSubmit={handleSubmit}>
+      <h2> Create a Product </h2>
+      <div>
+        <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productName">Product Name:</label>
+        <input type="text" id="productName" value={productName} onChange={(e) => setProductName(e.target.value)} />
+      </div>
+      <div>
+        <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productDescription">Product Description:</label>
+        <input type="text" id="productDescription" value={productDescription} onChange={(e) => setProductDescription(e.target.value)} />
+      </div>
+      <div>
+        <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productPrice">Product Price:</label>
+        <input type="number" id="productPrice" value={productPrice} onChange={(e) => setProductPrice(e.target.value)} />
+      </div>
+      <div>
+        <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productQuantity">Product Quantity:</label>
+        <input type="number" id="productQuantity" value={productQuantity} onChange={(e) => setProductQuantity(e.target.value)} />
+      </div>
+      <button className="buttonUpdateUpdate" type="submit">Create Product</button>
+      <ToastContainer />
+    </form>
+    )}
+    </>
+  );
+};
+
+const ProductImageUpload = () => {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [productId, setProductId] = useState('');
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
+
+  const handleImageChange = (event) => {
+    setSelectedImage(event.target.files[0]);
+  };
+  const handleProductIdChange = (event) => {
+    setProductId(event.target.value);
+  };
+
+  const handleImageUpload = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('image', selectedImage);
+
+      const response = await axios.post(`http://127.0.0.1:3500/util/uploadProductimg/${productId}`, formData, {
+      });
+      toast.success("Image uploaded successfully")
+      console.log('Image uploaded successfully:', response.data.imageUrl);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Error while uploading the image')
+    }
+  };
+
+  return (
+    <>
+    {userRole === 'doctor' && (
+
+    <div className="containerUpdate" >
+      <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productId">Product ID:</label>
+        <input type="text" id="productId" value={productId} onChange={handleProductIdChange} />
+      
+      <input style={{margin:"10px"}} type="file" accept="image/*" onChange={handleImageChange} />
+      <button className="buttonUpdateUpdate" onClick={handleImageUpload}>Upload Image</button>
+    </div>
+    )}
+    </>
+  );
+};
+
+const UpdateProduct = () => {
+  const [productID, setProductId] = useState('');
+  const [updateData, setUpdateData] = useState({
+    productDescription: '',
+    productName: '',
+    productPrice: '',
+    productQuantity: ''
+  });
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
+
+  const handleProductIdChange = (event) => {
+    setProductId(event.target.value);
+  };
+
+  const handleUpdateDataChange = (event) => {
+    const { name, value } = event.target;
+    setUpdateData({
+      ...updateData,
+      [name]: value
+    });
+  };
+
+  const handleUpdateProduct = async () => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:3500/products/update-product/${productID}`, updateData);
+        toast.success('Product updated successfully');
+        console.log('Product updated successfully:', response.data.message);
+    } catch (error) {
+      toast.error('Error updating product');
+      console.error('Error updating product:', error);
+    }
+  };
+
+  return (
+    <>
+    {userRole === 'doctor' && (
+    <div className="containerUpdate">
+      <div style={{ padding: "5px", margin: "5px" }}>
+        <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productId">Product ID:</label>
+        <input type="text" id="productId" value={productID} onChange={handleProductIdChange} />
+      </div>
+      <div style={{ padding: "5px", margin: "5px" }}>
+        <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productDescription">Update Product Description:</label>
+        <input
+          type="text"
+          id="productDescription"
+          name="productDescription"
+          value={updateData.productDescription}
+          onChange={handleUpdateDataChange}
+        />
+      </div>
+      <div style={{ padding: "5px", margin: "5px" }}>
+        <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productName">Update Product Name:</label>
+        <input
+          type="text"
+          id="productName"
+          name="productName"
+          value={updateData.productName}
+          onChange={handleUpdateDataChange}
+        />
+      </div>
+      <div style={{ padding: "5px", margin: "5px" }}>
+        <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productPrice">Update Product Price:</label>
+        <input
+          type="number"
+          id="productPrice"
+          name="productPrice"
+          value={updateData.productPrice}
+          onChange={handleUpdateDataChange}
+        />
+      </div>
+      <div style={{ padding: "5px", margin: "5px" }}>
+        <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productQuantity">Update Product Quantity:</label>
+        <input
+          type="number"
+          id="productQuantity"
+          name="productQuantity"
+          value={updateData.productQuantity}
+          onChange={handleUpdateDataChange}
+        />
+      </div>
+      <button className="buttonUpdateUpdate" onClick={handleUpdateProduct}>Update Product</button>
+    </div>
+    )}</>
+  );
+};
+
+
+
+const DeleteProduct = () => {
+  const [productId, setProductId] = useState('');
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserRole(response.data.user.role);
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
+
+  const handleProductIdChange = (event) => {
+    setProductId(event.target.value);
+  };
+
+  const handleDeleteProduct = async () => {
+    try {
+      const response = await axios.delete(`http://127.0.0.1:3500/products/delete-product/${productId}`);
+      toast.success('Product deleted successfully');
+      console.log('Product deleted successfully:', response.data.message);
+    } catch (error) {
+      toast.error('Error deleting product');
+      console.error('Error deleting product:', error);
+    }
+  };
+
+  return (
+    <>
+    {userRole === 'doctor' && (
+    <div className="containerUpdate">
+      <div style={{padding:"5px", margin:"5px"}}>
+        <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productId">Product ID:</label>
+        <input type="text" id="productId" value={productId} onChange={handleProductIdChange} />
+      </div>
+      <button className="buttonUpdateUpdate" onClick={handleDeleteProduct}>Delete Product</button>
+    </div>
+    )}
+    </>
+  );
+};
+
+
 const AdminPage = () => {
   return (
     <>
     <Navbar/>
+
+    <DoctorProfileImageUpload/>
 
     <SpecialtyUpdateForm/>
 
@@ -439,6 +1123,24 @@ const AdminPage = () => {
     <GetAllRequestsForDoctor/>
 
     <MakeDoctorRequest/>
+
+    <ProductForm/>
+
+    <ProductImageUpload />
+
+    <UpdateProduct />
+
+    <DeleteProduct />
+
+    <CreateFloorForm/>
+
+    <CreateRoomForm/>
+
+    <FloorDetails/>
+
+    <RoomDetails/>
+
+    <RoomReservations/>
 
     <div className="containerUpdate">
     <h2 style={{padding:"10px"}} className="labelUpdate">Check all users</h2>

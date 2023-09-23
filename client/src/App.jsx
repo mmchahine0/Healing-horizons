@@ -20,6 +20,8 @@ import AdminPage from './pages/adminPage';
 import AllUsers from './pages/AllUsers'
 import NotFound from './pages/notFound';
 import AllAppointment from './pages/AllAppointments';
+import RoomBooking from './pages/roomBooking';
+
 //components
 import Layout from './components/Layout';
 import { AuthProvider } from './context/AuthProvider';
@@ -50,6 +52,10 @@ function App() {
               <Route
               path="/home"
               element={<Home />}
+              />
+              <Route
+              path="/roomBooking"
+              element={<RoomBooking />}
               />
               <Route
               path="/appointment/:doctorIdString"
