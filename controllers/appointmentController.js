@@ -71,6 +71,8 @@ exports.bookAppointment = async (req, res) => {
       time: selectedTime,
       date: moment(appointmentDate).format('YYYY-MM-DD'),
       user: patientId,
+      doctor: doctorId
+
     };
 
     const appointment = await Appointment.create(appointmentData);
@@ -129,10 +131,11 @@ exports.sendAppointmentReminder = async (req, res) => {
 
 exports.getAppointments = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const { userId } = req.params;
 
-    const appointments = await Appointment.find({ user: userId });
-
+    const appointments = await Appointment.find({
+      $or: [{ user: userId }, { doctor: userId }]
+    });
     return res.status(200).json({ data: appointments });
   } catch (err) {
     console.log(err);

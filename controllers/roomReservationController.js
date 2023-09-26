@@ -7,8 +7,6 @@ const mongoose = require('mongoose');
 
 const calculateRoomReservationPrice = (checkInDate, checkOutDate) => {
   try {
-    // You can implement your pricing logic here based on the check-in and check-out dates
-    // For simplicity, let's assume a fixed price per day
     const dailyPrice = 100; // Adjust this based on your actual pricing logic
     const numberOfDays = moment(checkOutDate).diff(moment(checkInDate), 'days');
     const totalPrice = dailyPrice * numberOfDays;

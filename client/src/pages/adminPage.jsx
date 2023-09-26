@@ -1,10 +1,79 @@
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useParams } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "../styles/HoursStyles.css";
+
+const AllDoctorAppointments = () => {
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState('');
+  const [userRole, setUserRole] = useState('')
+  useEffect(() => {
+    axios
+      .get('http://127.0.0.1:3500/user/ownUser')
+      .then((response) => {
+        setUserId(response.data.user._id);
+        setUserRole(response.data.user.role)
+      })
+      .catch((error) => {
+        console.error('Error fetching user role:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const fetchDoctorAppointments = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:3500/appointment/get/${userId}`);
+        setAppointments(response.data.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching doctor appointments:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchDoctorAppointments();
+  }, [userId]);
+
+  const handleCancelAppointment = async (appointmentId) => {
+    try {
+      await axios.delete(`http://127.0.0.1:3500/appointment/cancel/${appointmentId}`);
+      const response = await axios.get(`http://127.0.0.1:3500/appointment/get/${userId}`);
+      setAppointments(response.data.data);
+      toast.success("Appointment cancelled successfully");
+    } catch (error) {
+      console.error('Error cancelling appointment:', error);
+      toast.error("Error cancelling appointment");
+    }
+  };
+
+  return (
+    <>{userRole === 'doctor' && (
+      <div id="appointments-container">
+        <h2 style={{padding:"10px"}}>Doctor's Appointments: </h2>
+        {loading ? (
+          <p>Loading appointments...</p>
+        ) : (
+          <ul style={{padding:"5px", margin:"10px"}} id="appointments-list">
+            {appointments.map((appointment) => (
+              <li key={appointment._id} className="appointment-item">
+                <div className="datetime">
+                  Date: {appointment.date}, Time: {appointment.time}
+                </div>
+                <button onClick={() => handleCancelAppointment(appointment._id)}>Cancel</button>
+              </li>
+            ))}
+          </ul>
+        )}
+         <ToastContainer />
+      </div>
+      )}    
+    </>
+  );
+};
 
 const DoctorProfileImageUpload = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -431,7 +500,7 @@ const UpdateOrderStatus = () => {
   );
 };
 
-const GetAllRequestsForDoctor = () => {
+const GetAllMedsRequest = () => {
   const [requests, setRequests] = useState([]);
   const [medicineQuantities, setMedicineQuantities] = useState({});
 
@@ -507,7 +576,7 @@ const MakeDoctorRequest = () => {
 
   return (
     <>
-    {userRole === 'doctor' && (
+    {userRole === 'admin' && (
       <div className="containerUpdate">
         <h2 className="labelUpdate">Make User a Doctor</h2>
         <form onSubmit={handleSubmit}>
@@ -573,7 +642,7 @@ const CreateRoomForm = () => {
 
   return (
     <>
-    {userRole === 'doctor' && (
+    {userRole === 'admin' && (
     <div className="containerUpdate">
       <h2 className="labelUpdate">Create a Room</h2>
       <form onSubmit={handleSubmit}>
@@ -633,7 +702,7 @@ const CreateFloorForm = () => {
 
   return (
     <>
-    {userRole === 'doctor' && (
+    {userRole === 'admin' && (
     <div className="containerUpdate">
       <h2>Create a Floor</h2>
       <form onSubmit={handleSubmit}>
@@ -687,7 +756,7 @@ const FloorDetails = () => {
 
   return (
     <>
-      {userRole === 'doctor' && (
+      {userRole === 'admin' && (
         <div className="containerUpdate">
           <h2 className="labelUpdate">Get Floor Data</h2>
           <form onSubmit={handleGetFloorData}>
@@ -751,7 +820,7 @@ const RoomDetails = () => {
 
   return (
     <>
-      {userRole === 'doctor' && (
+      {userRole === 'admin' && (
         <div className="containerUpdate">
           <h2 className="labelUpdate">Get Room Data</h2>
           <form onSubmit={handleGetRoomData}>
@@ -810,7 +879,7 @@ const RoomReservations = () => {
 
   return (
     <>
-    {userRole === 'doctor' && (
+    {userRole === 'admin' && (
 
     <div className="containerUpdate">
       <h2 className="labelUpdate">Room Reservations</h2>
@@ -875,7 +944,7 @@ const ProductForm = () => {
 
   return (
     <>
-    {userRole === 'doctor' && (
+    {userRole === 'admin' && (
 
     <form className="containerUpdate" onSubmit={handleSubmit}>
       <h2> Create a Product </h2>
@@ -943,7 +1012,7 @@ const ProductImageUpload = () => {
 
   return (
     <>
-    {userRole === 'doctor' && (
+    {userRole === 'admin' && (
 
     <div className="containerUpdate" >
       <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productId">Product ID:</label>
@@ -1003,7 +1072,7 @@ const UpdateProduct = () => {
 
   return (
     <>
-    {userRole === 'doctor' && (
+    {userRole === 'admin' && (
     <div className="containerUpdate">
       <div style={{ padding: "5px", margin: "5px" }}>
         <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productId">Product ID:</label>
@@ -1089,7 +1158,7 @@ const DeleteProduct = () => {
 
   return (
     <>
-    {userRole === 'doctor' && (
+    {userRole === 'admin' && (
     <div className="containerUpdate">
       <div style={{padding:"5px", margin:"5px"}}>
         <label style={{padding:"5px", margin:"5px"}} className="labelUpdate" htmlFor="productId">Product ID:</label>
@@ -1108,6 +1177,8 @@ const AdminPage = () => {
     <>
     <Navbar/>
 
+    <AllDoctorAppointments/>
+
     <DoctorProfileImageUpload/>
 
     <SpecialtyUpdateForm/>
@@ -1120,7 +1191,7 @@ const AdminPage = () => {
 
     <UpdateOrderStatus/>
 
-    <GetAllRequestsForDoctor/>
+    <GetAllMedsRequest/>
 
     <MakeDoctorRequest/>
 

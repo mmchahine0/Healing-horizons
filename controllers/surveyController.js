@@ -6,7 +6,7 @@ exports.submitSurvey = async (req, res) => {
     const { allergies, medicalHistory, criticalConditions, dateofbirth } = req.body;
 
     const user = await User.findById(req.user._id);
-    const userSurvey = await Survey.findOne({ user: user });
+    let userSurvey = await Survey.findOne({ user: user });
 
     if (userSurvey) {
       userSurvey.allergies = allergies;
@@ -31,6 +31,7 @@ exports.submitSurvey = async (req, res) => {
     res.status(500).json({ message: 'Something went wrong' });
   }
 };
+
 
 exports.getSurvey = async (req, res) => {
   try {
